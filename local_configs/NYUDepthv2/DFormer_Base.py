@@ -90,7 +90,7 @@ def add_path(path):
         sys.path.insert(0, path)
 add_path(osp.join(C.root_dir))
 
-C.log_dir = osp.abspath('checkpoints/' + C.dataset_name + '_' + C.backbone+'_'+str(C.drop_path_rate))
+C.log_dir = osp.abspath('checkpoints/' + C.dataset_name + '_' + C.backbone)
 if not os.path.isdir(C.log_dir):
     os.makedirs(C.log_dir)
 C.tb_dir = osp.abspath(osp.join(C.log_dir, "tb"))
