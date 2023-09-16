@@ -60,7 +60,7 @@ pip install tqdm python-opencv scipy tensorboardX tabulate easydict
 
 - **Datasets:** 
 
-By default, you can put datasets into the folder 'datasets' or use 'ln -s path_to_data dataset'.
+By default, you can put datasets into the folder 'datasets' or use 'ln -s path_to_data datasets'.
 
 | Datasets | [GoogleDrive](https://drive.google.com/drive/folders/1RIa9t7Wi4krq0YcgjR3EWBxWWJedrYUl?usp=sharing) | [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/EqActCWQb_pJoHpxvPh4xRgBMApqGAvUjid-XK3wcl08Ug?e=VcIVob) | [BaiduNetdisk](https://pan.baidu.com/s/1-CEL88wM5DYOFHOVjzRRhA?pwd=ij7q) | 
 |:---: |:---:|:---:|:---:|
