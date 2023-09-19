@@ -1,12 +1,12 @@
 # <p align=center>`DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation`</p>
 
 > **Authors:**
-> [Bowen Yin](http://yinbow.github.io/),
+> [Bowen Yin](https://scholar.google.com/citations?user=xr_FRrEAAAAJ&hl=zh-CN&oi=sra),
 > [Xuying Zhang](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ),
 > [Zhongyu Li](https://scholar.google.com/citations?user=g6WHXrgAAAAJ&hl=zh-CN),
 > [Li Liu](https://scholar.google.com/citations?hl=zh-CN&user=9cMQrVsAAAAJ),
 > [Ming-Ming Cheng](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ),
-> [Qibin Hou*](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ)
+> [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN)
 
 
 This official repository contains the source code, pre-trained, trained checkpoints, and evaluation toolbox of paper 'DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation'. The technical report could be found at [arXiv](https://arxiv.org/pdf/2309.09668.pdf). 
