@@ -2,17 +2,25 @@
 
 > **Authors:**
 > [Bowen Yin](http://yinbow.github.io/),
-> [Xuying Zhang](),
-> [Zhongyu Li](),
-> [Li Liu](),
-> [Ming-Ming Cheng](),
-> [Qibin Hou*]()
+> [Xuying Zhang](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ),
+> [Zhongyu Li](https://scholar.google.com/citations?user=g6WHXrgAAAAJ&hl=zh-CN),
+> [Li Liu](https://scholar.google.com/citations?hl=zh-CN&user=9cMQrVsAAAAJ),
+> [Ming-Ming Cheng](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ),
+> [Qibin Hou*](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ)
 
 
-This official repository contains the source code, pre-trained, trained checkpoints, and evaluation toolbox of paper 'DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation'. The technical report could be found at [arXiv](). 
-And the code for pre-training and RGB-D saliency will be released in [RGB-D pre-training]() and [RGBD Sal]().
+This official repository contains the source code, pre-trained, trained checkpoints, and evaluation toolbox of paper 'DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation'. The technical report could be found at [arXiv](https://arxiv.org/pdf/2309.09668.pdf). 
+The code for pre-training and RGB-D saliency will be released soon.
 
 
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/semantic-segmentation-on-nyu-depth-v2)](https://paperswithcode.com/sota/semantic-segmentation-on-nyu-depth-v2?p=dformer-rethinking-rgbd-representation)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/semantic-segmentation-on-sun-rgbd)](https://paperswithcode.com/sota/semantic-segmentation-on-sun-rgbd?p=dformer-rethinking-rgbd-representation)
+
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/rgb-d-salient-object-detection-on-des)](https://paperswithcode.com/sota/rgb-d-salient-object-detection-on-des?p=dformer-rethinking-rgbd-representation)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/rgb-d-salient-object-detection-on-stere)](https://paperswithcode.com/sota/rgb-d-salient-object-detection-on-stere?p=dformer-rethinking-rgbd-representation)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/rgb-d-salient-object-detection-on-sip)](https://paperswithcode.com/sota/rgb-d-salient-object-detection-on-sip?p=dformer-rethinking-rgbd-representation)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/rgb-d-salient-object-detection-on-nlpr)](https://paperswithcode.com/sota/rgb-d-salient-object-detection-on-nlpr?p=dformer-rethinking-rgbd-representation)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/rgb-d-salient-object-detection-on-nju2k)](https://paperswithcode.com/sota/rgb-d-salient-object-detection-on-nju2k?p=dformer-rethinking-rgbd-representation)
 
 <p align="center">
     <img src="figs/DFormer.png" width="600"  width="1200"/> <br />
@@ -165,7 +173,12 @@ bash eval.sh
 ## Reference
 You may want to cite:
 ```
-
+@article{yin2023dformer,
+  title={DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation}, 
+  author={Bowen Yin and Xuying Zhang and Zhongyu Li and Li Liu and Ming-Ming Cheng and Qibin Hou},
+  journal={arXiv preprint arXiv:2309.09668},
+  year={2023}
+}
 ```
 
 
