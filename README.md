@@ -58,7 +58,7 @@ conda create -n dformer python=3.10 -y
 conda activate dformer
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
 pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.11/index.html
-pip install tqdm python-opencv scipy tensorboardX tabulate easydict
+pip install tqdm opencv-python scipy tensorboardX tabulate easydict
 ```
 
 
