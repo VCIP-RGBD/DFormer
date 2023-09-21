@@ -91,8 +91,6 @@ def add_path(path):
 add_path(osp.join(C.root_dir))
 
 C.log_dir = osp.abspath('checkpoints/' + C.dataset_name + '_' + C.backbone)
-if not os.path.isdir(C.log_dir):
-    os.makedirs(C.log_dir)
 C.tb_dir = osp.abspath(osp.join(C.log_dir, "tb"))
 C.log_dir_link = C.log_dir
 C.checkpoint_dir = osp.abspath(osp.join(C.log_dir, "checkpoint"))#'/mnt/sda/repos/2023_RGBX/pretrained/'#osp.abspath(osp.join(C.log_dir, "checkpoint"))
