@@ -49,7 +49,10 @@ logger = get_logger()
 with Engine(custom_parser=parser) as engine:
     args = parser.parse_args()
     exec('from ' + args.config+' import config')
-    if dist.get_rank() == 0 and not os.path.isdir(config.log_dir):
+    if engine.distributed:
+        if dist.get_rank() == 0 and not os.path.isdir(config.log_dir):
+            os.makedirs(config.log_dir)
+    elif not os.path.isdir(config.log_dir):
         os.makedirs(config.log_dir)
 
     cudnn.benchmark = True
@@ -74,7 +77,7 @@ with Engine(custom_parser=parser) as engine:
     else:
         BatchNorm2d = nn.BatchNorm2d
     
-    model=segmodel(cfg=config, criterion=criterion, norm_layer=BatchNorm2d)
+    model=segmodel(cfg=config, criterion=criterion, norm_layer=BatchNorm2d, single_GPU = (not engine.distributed))
     # weight=torch.load('checkpoints/NYUv2_DFormer_Large.pth')['model']
     # w_list=list(weight.keys())
     # # for k in w_list:
@@ -228,9 +231,13 @@ with Engine(custom_parser=parser) as engine:
                 with torch.no_grad():
                     model.eval()
                     device = torch.device('cuda')
-                    acc, macc, f1, mf1, ious, miou=evaluate(model, val_loader,config, device)
+                    metric = evaluate_msf(model, val_loader,config, device,[0.5,0.75,1.0,1.25,1.5],True,engine)
+                    ious, miou = metric.compute_iou()
+                    acc, macc = metric.compute_pixel_acc()
+                    f1, mf1 = metric.compute_f1()
+                    # print('miou',miou)
                 # print('acc, macc, f1, mf1, ious, miou',acc, macc, f1, mf1, ious, miou)
-                print('miou',miou)
+                # print('miou',miou)
                 if miou>best_miou and miou>50:
                     best_miou=miou
                     engine.save_and_link_checkpoint(config.checkpoint_dir,

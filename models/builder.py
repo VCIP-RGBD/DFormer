@@ -60,7 +60,7 @@ def build_segmentor(cfg, train_cfg=None, test_cfg=None):
 logger = get_logger()
 
 class EncoderDecoder(nn.Module):
-    def __init__(self, cfg=None, criterion=nn.CrossEntropyLoss(reduction='mean', ignore_index=255), norm_layer=nn.BatchNorm2d):
+    def __init__(self, cfg=None, criterion=nn.CrossEntropyLoss(reduction='mean', ignore_index=255), norm_layer=nn.BatchNorm2d, single_GPU=False):
         super(EncoderDecoder, self).__init__()
         self.norm_layer = norm_layer
         
@@ -77,10 +77,16 @@ class EncoderDecoder(nn.Module):
             from .encoders.DFormer import DFormer_Tiny as backbone
             self.channels=[32, 64, 128, 256]
 
-        if cfg.drop_path_rate is not None:
-            self.backbone = backbone(drop_path_rate=cfg.drop_path_rate)
+        if single_GPU:
+            print('single GPU')
+            norm_cfg=dict(type='BN', requires_grad=True)
         else:
-            self.backbone = backbone(drop_path_rate=0.1)
+            norm_cfg=dict(type='SyncBN', requires_grad=True)
+
+        if cfg.drop_path_rate is not None:
+            self.backbone = backbone(drop_path_rate=cfg.drop_path_rate, norm_cfg = norm_cfg)
+        else:
+            self.backbone = backbone(drop_path_rate=0.1, norm_cfg = norm_cfg)
         
 
         self.aux_head = None
@@ -94,7 +100,7 @@ class EncoderDecoder(nn.Module):
             logger.info('Using MLP Decoder')
             print(cfg.num_classes)
             from .decoders.ham_head import LightHamHead as DecoderHead
-            self.decode_head = DecoderHead(in_channels=self.channels[1:], num_classes=cfg.num_classes, in_index=[1,2,3],norm_cfg=dict(type='SyncBN', requires_grad=True), channels=cfg.decoder_embed_dim)
+            self.decode_head = DecoderHead(in_channels=self.channels[1:], num_classes=cfg.num_classes, in_index=[1,2,3],norm_cfg=norm_cfg, channels=cfg.decoder_embed_dim)
             from .decoders.fcnhead import FCNHead
             if cfg.aux_rate!=0:
                 self.aux_index = 2
