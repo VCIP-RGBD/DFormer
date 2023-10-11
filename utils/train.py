@@ -238,7 +238,7 @@ with Engine(custom_parser=parser) as engine:
                     # print('miou',miou)
                 # print('acc, macc, f1, mf1, ious, miou',acc, macc, f1, mf1, ious, miou)
                 # print('miou',miou)
-                if miou>best_miou and miou>50:
+                if miou>best_miou:
                     best_miou=miou
                     engine.save_and_link_checkpoint(config.checkpoint_dir,
                                                     config.log_dir,
