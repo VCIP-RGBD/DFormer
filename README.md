@@ -19,6 +19,13 @@
 > [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN)
 
 
+\[[Paper](https://arxiv.org/pdf/2309.09668.pdf)\] 
+\[[homepage](https://yinbow.github.io/Projects/DFormer/index.html)\] 
+\[[公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ)\]
+\[[DFormer-SOD(comming soon)]()\]
+\[[DFormer-Pretrain(comming soon)]()\]
+
+
 This official repository contains the source code, pre-trained, trained checkpoints, and evaluation toolbox of paper 'DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation'. The technical report could be found at [arXiv](https://arxiv.org/pdf/2309.09668.pdf). 
 The code for pre-training and RGB-D saliency will be released soon.
 
