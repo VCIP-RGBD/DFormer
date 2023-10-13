@@ -20,7 +20,7 @@
 
 
 \[[Paper](https://arxiv.org/pdf/2309.09668.pdf)\] 
-\[[homepage](https://yinbow.github.io/Projects/DFormer/index.html)\] 
+\[[Homepage](https://yinbow.github.io/Projects/DFormer/index.html)\] 
 \[[公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ)\]
 \[[DFormer-SOD(comming soon)]()\]
 \[[DFormer-Pretrain(comming soon)]()\]
