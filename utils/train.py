@@ -50,10 +50,14 @@ with Engine(custom_parser=parser) as engine:
     args = parser.parse_args()
     exec('from ' + args.config+' import config')
     if engine.distributed:
-        if dist.get_rank() == 0 and not os.path.isdir(config.log_dir):
+        if dist.get_rank() == 0:
+            config.log_dir = config.log_dir+'_'+time.strftime('%Y%m%d-%H%M%S', time.localtime()).replace(' ','_')
+            if not os.path.isdir(config.log_dir):
+                os.makedirs(config.log_dir)
+    else:
+        config.log_dir = config.log_dir+'_'+time.strftime('%Y%m%d-%H%M%S', time.localtime()).replace(' ','_')
+        if not os.path.isdir(config.log_dir):
             os.makedirs(config.log_dir)
-    elif not os.path.isdir(config.log_dir):
-        os.makedirs(config.log_dir)
 
     cudnn.benchmark = True
    
