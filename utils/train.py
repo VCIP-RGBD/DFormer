@@ -229,7 +229,7 @@ with Engine(custom_parser=parser) as engine:
                             best_miou=miou
                             engine.save_and_link_checkpoint(config.checkpoint_dir,
                                                             config.log_dir,
-                                                            config.log_dir_link
+                                                            config.log_dir_link,
                                                             infor='miou'+str(miou))
                         print('miou',miou,'best',best_miou)
             elif not engine.distributed:
@@ -247,6 +247,6 @@ with Engine(custom_parser=parser) as engine:
                     best_miou=miou
                     engine.save_and_link_checkpoint(config.checkpoint_dir,
                                                     config.log_dir,
-                                                    config.log_dir_link
+                                                    config.log_dir_link,
                                                     infor='miou'+str(miou))
                 print('miou',miou,'best',best_miou)
