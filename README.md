@@ -150,6 +150,8 @@ You can change the `local_config' files in the script to choose the model for tr
 bash train.sh
 ```
 
+After training, the checkpoints will be saved in the path `checkpoints/XXX', where the XXX is depends on the training config.
+
 
 **3. Eval.**
 

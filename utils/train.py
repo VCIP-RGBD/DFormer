@@ -227,10 +227,10 @@ with Engine(custom_parser=parser) as engine:
                         f1, mf1 = metric.compute_f1() 
                         if miou>best_miou and miou>50:
                             best_miou=miou
-                            engine.save_and_link_checkpoint(config.checkpoint_dir,
+                            engine.save_and_link_checkpoint(config.log_dir,
                                                             config.log_dir,
                                                             config.log_dir_link,
-                                                            infor='miou'+str(miou))
+                                                            infor='_miou_'+str(miou))
                         print('miou',miou,'best',best_miou)
             elif not engine.distributed:
                 with torch.no_grad():
@@ -245,8 +245,8 @@ with Engine(custom_parser=parser) as engine:
                 # print('miou',miou)
                 if miou>best_miou:
                     best_miou=miou
-                    engine.save_and_link_checkpoint(config.checkpoint_dir,
+                    engine.save_and_link_checkpoint(config.log_dir,
                                                     config.log_dir,
                                                     config.log_dir_link,
-                                                    infor='miou'+str(miou))
+                                                    infor='_miou_'+str(miou))
                 print('miou',miou,'best',best_miou)
