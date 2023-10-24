@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# encoding: utf-8
-# @Time    : 2018/8/1 上午1:50
-# @Author  : yuchangqian
-# @Contact : changqian_yu@163.com
-# @File    : lr_policy.py.py
-
 from abc import ABCMeta, abstractmethod
 
 
