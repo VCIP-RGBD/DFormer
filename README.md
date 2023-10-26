@@ -22,7 +22,7 @@
 \[[Paper](https://arxiv.org/pdf/2309.09668.pdf)\] 
 \[[Homepage](https://yinbow.github.io/Projects/DFormer/index.html)\] 
 \[[公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ)\]
-\[[DFormer-SOD(comming soon)]()\]
+\[[DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD)\]
 \[[DFormer-Pretrain(comming soon)]()\]
 
 
@@ -55,6 +55,8 @@ We invite all to contribute in making it more acessible and useful. If you have 
 ## 1. 🌟  NEWS 
 
 - [2023/09/05] Releasing the codebase of DFormer and all the pre-trained checkpoints.
+
+- [2023/10/26] Releasing the RGBD SOD codebase of DFormer at [DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD).
 
 
 
@@ -178,7 +180,7 @@ bash eval.sh
 
 ## 🕙 ToDo
 - [ ] Release the code of RGB-D pre-training.
-- [ ] Release the DFormer code for RGB-D salient obejct detection.
+- ~~[-] Release the DFormer code for RGB-D salient obejct detection.~~
 
 > We invite all to contribute in making it more acessible and useful. If you have any questions or suggestions about our work, feel free to contact me via e-mail (bowenyin@mail.nankai.edu.cn) or raise an issue. 
 
