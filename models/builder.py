@@ -97,7 +97,7 @@ class EncoderDecoder(nn.Module):
             self.decode_head = DecoderHead(in_channels=self.channels, num_classes=cfg.num_classes, norm_layer=norm_layer, embed_dim=cfg.decoder_embed_dim)
         
         elif cfg.decoder == 'ham':
-            logger.info('Using MLP Decoder')
+            logger.info('Using Ham Decoder')
             print(cfg.num_classes)
             from .decoders.ham_head import LightHamHead as DecoderHead
             self.decode_head = DecoderHead(in_channels=self.channels[1:], num_classes=cfg.num_classes, in_index=[1,2,3],norm_cfg=norm_cfg, channels=cfg.decoder_embed_dim)

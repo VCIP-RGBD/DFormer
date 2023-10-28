@@ -54,7 +54,6 @@ C.pretrained_model = 'checkpoints/pretrained/DFormer_Large.pth.tar'
 C.decoder = 'ham'
 C.decoder_embed_dim = 512
 C.optimizer = 'AdamW'
-C.aux_rate=0.0
 
 """Train Config"""
 C.lr = 6e-5
@@ -69,12 +68,13 @@ C.train_scale_array = [0.5, 0.75, 1, 1.25, 1.5, 1.75]
 C.warm_up_epoch = 10
 C.channels=[96,192,288,576]
 
-C.aux_rate =0.0
+
 
 C.fix_bias = True
 C.bn_eps = 1e-3
 C.bn_momentum = 0.1
 C.drop_path_rate=0.15
+C.aux_rate =0.0
 
 """Eval Config"""
 C.eval_iter = 25
