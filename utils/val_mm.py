@@ -138,7 +138,7 @@ def evaluate(model, dataloader, config, device, engine, save_dir=None):
                 preds = palette[preds]
                 plt.imsave(save_name, preds)
             elif config.dataset_name in ["NYUDepthv2"]:
-                palette = np.load("./nyucmap.npy")
+                palette = np.load("./utils/nyucmap.npy")
                 preds = palette[preds]
                 plt.imsave(save_name, preds)
             elif config.dataset_name in ["MFNet"]:
@@ -259,7 +259,7 @@ def evaluate_msf(
                 preds = palette[preds]
                 plt.imsave(save_name, preds)
             elif config.dataset_name in ["NYUDepthv2"]:
-                palette = np.load("./nyucmap.npy")
+                palette = np.load("./utils/nyucmap.npy")
                 preds = palette[preds]
                 plt.imsave(save_name, preds)
             elif config.dataset_name in ["MFNet"]:
