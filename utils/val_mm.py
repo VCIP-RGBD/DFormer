@@ -88,9 +88,9 @@ def evaluate(model, dataloader, config, device, engine, save_dir=None):
     for minibatch in tqdm(dataloader, dynamic_ncols=True):
         images = minibatch["data"][0]
         labels = minibatch["label"][0]
-        modal_xs = minibatch['modal_x'][0]
+        modal_xs = minibatch["modal_x"][0]
         # print(images.shape,labels.shape)
-        images = [images.to(device),modal_xs.to(device)]
+        images = [images.to(device), modal_xs.to(device)]
         labels = labels.to(device)
         if sliding:
             preds = sliding_predict(model, images, num_classes=n_classes).softmax(dim=1)
@@ -138,7 +138,7 @@ def evaluate(model, dataloader, config, device, engine, save_dir=None):
                 preds = palette[preds]
                 plt.imsave(save_name, preds)
             elif config.dataset_name in ["NYUDepthv2"]:
-                palette=np.load("./nyucmap.npy")
+                palette = np.load("./nyucmap.npy")
                 preds = palette[preds]
                 plt.imsave(save_name, preds)
             elif config.dataset_name in ["MFNet"]:
@@ -174,40 +174,116 @@ def evaluate(model, dataloader, config, device, engine, save_dir=None):
 
 
 @torch.no_grad()
-def evaluate_msf(model, dataloader,config, device, scales, flip, engine):
+def evaluate_msf(
+    model, dataloader, config, device, scales, flip, engine, save_dir=None
+):
     model.eval()
 
     n_classes = config.num_classes
     metrics = Metrics(n_classes, config.background, device)
 
     for minibatch in tqdm(dataloader):
-        images = minibatch['data']
-        labels = minibatch['label']
-        modal_xs = minibatch['modal_x']
+        images = minibatch["data"]
+        labels = minibatch["label"]
+        modal_xs = minibatch["modal_x"]
         # print(images.shape,labels.shape)
-        images = [images.to(device),modal_xs.to(device)]
+        images = [images.to(device), modal_xs.to(device)]
         labels = labels.to(device)
         B, H, W = labels.shape
         scaled_logits = torch.zeros(B, n_classes, H, W).to(device)
 
         for scale in scales:
             new_H, new_W = int(scale * H), int(scale * W)
-            new_H, new_W = int(math.ceil(new_H / 32)) * 32, int(math.ceil(new_W / 32)) * 32
-            scaled_images = [F.interpolate(img, size=(new_H, new_W), mode='bilinear', align_corners=True) for img in images]
+            new_H, new_W = (
+                int(math.ceil(new_H / 32)) * 32,
+                int(math.ceil(new_W / 32)) * 32,
+            )
+            scaled_images = [
+                F.interpolate(
+                    img, size=(new_H, new_W), mode="bilinear", align_corners=True
+                )
+                for img in images
+            ]
             scaled_images = [scaled_img.to(device) for scaled_img in scaled_images]
-            logits = model(scaled_images[0],scaled_images[1])
-            logits = F.interpolate(logits, size=(H, W), mode='bilinear', align_corners=True)
+            logits = model(scaled_images[0], scaled_images[1])
+            logits = F.interpolate(
+                logits, size=(H, W), mode="bilinear", align_corners=True
+            )
             scaled_logits += logits.softmax(dim=1)
 
             if flip:
-                scaled_images = [torch.flip(scaled_img, dims=(3,)) for scaled_img in scaled_images]
-                logits = model(scaled_images[0],scaled_images[1])
+                scaled_images = [
+                    torch.flip(scaled_img, dims=(3,)) for scaled_img in scaled_images
+                ]
+                logits = model(scaled_images[0], scaled_images[1])
                 logits = torch.flip(logits, dims=(3,))
-                logits = F.interpolate(logits, size=(H, W), mode='bilinear', align_corners=True)
+                logits = F.interpolate(
+                    logits, size=(H, W), mode="bilinear", align_corners=True
+                )
                 scaled_logits += logits.softmax(dim=1)
 
+        if save_dir is not None:
+            palette = [
+                [128, 64, 128],
+                [244, 35, 232],
+                [70, 70, 70],
+                [102, 102, 156],
+                [190, 153, 153],
+                [153, 153, 153],
+                [250, 170, 30],
+                [220, 220, 0],
+                [107, 142, 35],
+                [152, 251, 152],
+                [70, 130, 180],
+                [220, 20, 60],
+                [255, 0, 0],
+                [0, 0, 142],
+                [0, 0, 70],
+                [0, 60, 100],
+                [0, 80, 100],
+                [0, 0, 230],
+                [119, 11, 32],
+            ]
+            palette = np.array(palette, dtype=np.uint8)
+            cmap = ListedColormap(palette)
+            names = (
+                minibatch["fn"][0]
+                .replace(".jpg", "")
+                .replace(".png", "")
+                .replace("datasets/", "")
+            )
+            save_name = save_dir + "/" + names + "_pred.png"
+            pathlib.Path(save_name).parent.mkdir(parents=True, exist_ok=True)
+            preds = scaled_logits.argmax(dim=1).cpu().squeeze().numpy().astype(np.uint8)
+            if config.dataset_name in ["KITTI-360", "EventScape"]:
+                preds = palette[preds]
+                plt.imsave(save_name, preds)
+            elif config.dataset_name in ["NYUDepthv2"]:
+                palette = np.load("./nyucmap.npy")
+                preds = palette[preds]
+                plt.imsave(save_name, preds)
+            elif config.dataset_name in ["MFNet"]:
+                palette = np.array(
+                    [
+                        [0, 0, 0],
+                        [64, 0, 128],
+                        [64, 64, 0],
+                        [0, 128, 192],
+                        [0, 0, 192],
+                        [128, 128, 0],
+                        [64, 64, 128],
+                        [192, 128, 128],
+                        [192, 64, 0],
+                    ],
+                    dtype=np.uint8,
+                )
+                preds = palette[preds]
+                plt.imsave(save_name, preds)
+            else:
+                assert 1 == 2
+
         metrics.update(scaled_logits, labels)
-    
+
     # ious, miou = metrics.compute_iou()
     # acc, macc = metrics.compute_pixel_acc()
     # f1, mf1 = metrics.compute_f1()

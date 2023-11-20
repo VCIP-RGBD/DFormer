@@ -17,6 +17,7 @@ python -m torch.distributed.launch \
     utils/infer.py \
     --config=local_configs.NYUDepthv2.DFormer_Large \
     --continue_fpath=checkpoints/trained/NYUv2_DFormer_Large.pth \
+    --save_path "output/" \
     --gpus=$GPUS
     
 
