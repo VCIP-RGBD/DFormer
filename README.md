@@ -162,6 +162,11 @@ You can change the `local_config' files and checkpoint path in the script to cho
 bash eval.sh
 ```
 
+**4. Visualize.**
+
+```
+bash infer.sh
+```
 
 
 ## 🚩 Performance
