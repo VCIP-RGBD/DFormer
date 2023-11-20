@@ -1,3 +1,7 @@
+from matplotlib import pyplot as plt
+from matplotlib.colors import ListedColormap
+import pathlib
+import matplotlib as mpl
 import torch
 import argparse
 import yaml
@@ -9,17 +13,22 @@ from tqdm import tqdm
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 from torch.nn import functional as F
+
 # from semseg.models import *
 # from semseg.datasets import *
 # from semseg.augmentations_mm import get_val_augmentation
 from utils.metrics_new import Metrics
+
 # from semseg.utils.utils import setup_cudnn
 from math import ceil
 import numpy as np
 from torch.utils.data import DistributedSampler, RandomSampler
 from torch import distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
+import cv2
+
 # from semseg.utils.utils import fix_seeds, setup_cudnn, cleanup_ddp, setup_ddp, get_logger, cal_flops, print_iou
+
 
 def pad_image(img, target_size):
     rows_to_pad = max(target_size[0] - img.shape[2], 0)
@@ -27,18 +36,23 @@ def pad_image(img, target_size):
     padded_img = F.pad(img, (0, cols_to_pad, 0, rows_to_pad), "constant", 0)
     return padded_img
 
+
 @torch.no_grad()
 def sliding_predict(model, image, num_classes, flip=True):
     image_size = image[0].shape
-    tile_size = (int(ceil(image_size[2]*1)), int(ceil(image_size[3]*1)))
-    overlap = 1/3
+    tile_size = (int(ceil(image_size[2] * 1)), int(ceil(image_size[3] * 1)))
+    overlap = 1 / 3
 
     stride = ceil(tile_size[0] * (1 - overlap))
-    
+
     num_rows = int(ceil((image_size[2] - tile_size[0]) / stride) + 1)
     num_cols = int(ceil((image_size[3] - tile_size[1]) / stride) + 1)
-    total_predictions = torch.zeros((num_classes, image_size[2], image_size[3]), device=torch.device('cuda'))
-    count_predictions = torch.zeros((image_size[2], image_size[3]), device=torch.device('cuda'))
+    total_predictions = torch.zeros(
+        (num_classes, image_size[2], image_size[3]), device=torch.device("cuda")
+    )
+    count_predictions = torch.zeros(
+        (image_size[2], image_size[3]), device=torch.device("cuda")
+    )
     tile_counter = 0
 
     for row in range(num_rows):
@@ -51,28 +65,29 @@ def sliding_predict(model, image, num_classes, flip=True):
             padded_img = [pad_image(modal, tile_size) for modal in img]
             tile_counter += 1
             # print(padded_img[0].shape,padded_img[1].shape)
-            padded_prediction = model(padded_img[0],padded_img[1])
+            padded_prediction = model(padded_img[0], padded_img[1])
             if flip:
                 fliped_img = [padded_modal.flip(-1) for padded_modal in padded_img]
-                fliped_predictions = model(fliped_img[0],fliped_img[1])
+                fliped_predictions = model(fliped_img[0], fliped_img[1])
                 padded_prediction += fliped_predictions.flip(-1)
-            predictions = padded_prediction[:, :, :img[0].shape[2], :img[0].shape[3]]
+            predictions = padded_prediction[:, :, : img[0].shape[2], : img[0].shape[3]]
             count_predictions[y_min:y_max, x_min:x_max] += 1
             total_predictions[:, y_min:y_max, x_min:x_max] += predictions.squeeze(0)
 
     return total_predictions.unsqueeze(0)
 
+
 @torch.no_grad()
-def evaluate(model, dataloader,config, device,engine):
-    print('Evaluating...')
+def evaluate(model, dataloader, config, device, engine, save_dir=None):
+    print("Evaluating...")
     model.eval()
     n_classes = config.num_classes
     metrics = Metrics(n_classes, config.background, device)
     sliding = False
 
-    for minibatch in tqdm(dataloader):
-        images = minibatch['data'][0]
-        labels = minibatch['label'][0]
+    for minibatch in tqdm(dataloader, dynamic_ncols=True):
+        images = minibatch["data"][0]
+        labels = minibatch["label"][0]
         modal_xs = minibatch['modal_x'][0]
         # print(images.shape,labels.shape)
         images = [images.to(device),modal_xs.to(device)]
@@ -80,11 +95,71 @@ def evaluate(model, dataloader,config, device,engine):
         if sliding:
             preds = sliding_predict(model, images, num_classes=n_classes).softmax(dim=1)
         else:
-            preds = model(images[0],images[1]).softmax(dim=1)
-        if len(labels.shape)==2:
-            labels=labels.unsqueeze(0)
+            preds = model(images[0], images[1]).softmax(dim=1)
+        if len(labels.shape) == 2:
+            labels = labels.unsqueeze(0)
         # print(preds.shape,labels.shape)
         metrics.update(preds, labels)
+
+        if save_dir is not None:
+            palette = [
+                [128, 64, 128],
+                [244, 35, 232],
+                [70, 70, 70],
+                [102, 102, 156],
+                [190, 153, 153],
+                [153, 153, 153],
+                [250, 170, 30],
+                [220, 220, 0],
+                [107, 142, 35],
+                [152, 251, 152],
+                [70, 130, 180],
+                [220, 20, 60],
+                [255, 0, 0],
+                [0, 0, 142],
+                [0, 0, 70],
+                [0, 60, 100],
+                [0, 80, 100],
+                [0, 0, 230],
+                [119, 11, 32],
+            ]
+            palette = np.array(palette, dtype=np.uint8)
+            cmap = ListedColormap(palette)
+            names = (
+                minibatch["fn"][0]
+                .replace(".jpg", "")
+                .replace(".png", "")
+                .replace("datasets/", "")
+            )
+            save_name = save_dir + "/" + names + "_pred.png"
+            pathlib.Path(save_name).parent.mkdir(parents=True, exist_ok=True)
+            preds = preds.argmax(dim=1).cpu().squeeze().numpy().astype(np.uint8)
+            if config.dataset_name in ["KITTI-360", "EventScape"]:
+                preds = palette[preds]
+                plt.imsave(save_name, preds)
+            elif config.dataset_name in ["NYUDepthv2"]:
+                palette=np.load("./nyucmap.npy")
+                preds = palette[preds]
+                plt.imsave(save_name, preds)
+            elif config.dataset_name in ["MFNet"]:
+                palette = np.array(
+                    [
+                        [0, 0, 0],
+                        [64, 0, 128],
+                        [64, 64, 0],
+                        [0, 128, 192],
+                        [0, 0, 192],
+                        [128, 128, 0],
+                        [64, 64, 128],
+                        [192, 128, 128],
+                        [192, 64, 0],
+                    ],
+                    dtype=np.uint8,
+                )
+                preds = palette[preds]
+                plt.imsave(save_name, preds)
+            else:
+                assert 1 == 2
 
     # ious, miou = metrics.compute_iou()
     # acc, macc = metrics.compute_pixel_acc()
@@ -146,59 +221,80 @@ def evaluate_msf(model, dataloader,config, device, scales, flip, engine):
 
 
 def main(cfg):
-    device = torch.device(cfg['DEVICE'])
+    device = torch.device(cfg["DEVICE"])
 
-    eval_cfg = cfg['EVAL']
-    transform = get_val_augmentation(eval_cfg['IMAGE_SIZE'])
+    eval_cfg = cfg["EVAL"]
+    transform = get_val_augmentation(eval_cfg["IMAGE_SIZE"])
     # cases = ['cloud', 'fog', 'night', 'rain', 'sun']
     # cases = ['motionblur', 'overexposure', 'underexposure', 'lidarjitter', 'eventlowres']
-    cases = [None] # all
-    
-    model_path = Path(eval_cfg['MODEL_PATH'])
-    if not model_path.exists(): 
+    cases = [None]  # all
+
+    model_path = Path(eval_cfg["MODEL_PATH"])
+    if not model_path.exists():
         raise FileNotFoundError
     # print(f"Evaluating {model_path}...")
 
-    exp_time = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-    eval_path = os.path.join(os.path.dirname(eval_cfg['MODEL_PATH']), 'eval_{}.txt'.format(exp_time))
+    exp_time = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+    eval_path = os.path.join(
+        os.path.dirname(eval_cfg["MODEL_PATH"]), "eval_{}.txt".format(exp_time)
+    )
 
     for case in cases:
-        dataset = eval(cfg['DATASET']['NAME'])(cfg['DATASET']['ROOT'], 'val', transform, cfg['DATASET']['MODALS'], case)
+        dataset = eval(cfg["DATASET"]["NAME"])(
+            cfg["DATASET"]["ROOT"], "val", transform, cfg["DATASET"]["MODALS"], case
+        )
         # --- test set
         # dataset = eval(cfg['DATASET']['NAME'])(cfg['DATASET']['ROOT'], 'test', transform, cfg['DATASET']['MODALS'], case)
 
-        model = eval(cfg['MODEL']['NAME'])(cfg['MODEL']['BACKBONE'], dataset.n_classes, cfg['DATASET']['MODALS'])
-        msg = model.load_state_dict(torch.load(str(model_path), map_location='cpu'))
+        model = eval(cfg["MODEL"]["NAME"])(
+            cfg["MODEL"]["BACKBONE"], dataset.n_classes, cfg["DATASET"]["MODALS"]
+        )
+        msg = model.load_state_dict(torch.load(str(model_path), map_location="cpu"))
         # print(msg)
         model = model.to(device)
         sampler_val = None
-        dataloader = DataLoader(dataset, batch_size=eval_cfg['BATCH_SIZE'], num_workers=eval_cfg['BATCH_SIZE'], pin_memory=False, sampler=sampler_val)
+        dataloader = DataLoader(
+            dataset,
+            batch_size=eval_cfg["BATCH_SIZE"],
+            num_workers=eval_cfg["BATCH_SIZE"],
+            pin_memory=False,
+            sampler=sampler_val,
+        )
         if True:
-            if eval_cfg['MSF']['ENABLE']:
-                acc, macc, f1, mf1, ious, miou = evaluate_msf(model, dataloader, device, eval_cfg['MSF']['SCALES'], eval_cfg['MSF']['FLIP'])
+            if eval_cfg["MSF"]["ENABLE"]:
+                acc, macc, f1, mf1, ious, miou = evaluate_msf(
+                    model,
+                    dataloader,
+                    device,
+                    eval_cfg["MSF"]["SCALES"],
+                    eval_cfg["MSF"]["FLIP"],
+                )
             else:
                 acc, macc, f1, mf1, ious, miou = evaluate(model, dataloader, device)
 
             table = {
-                'Class': list(dataset.CLASSES) + ['Mean'],
-                'IoU': ious + [miou],
-                'F1': f1 + [mf1],
-                'Acc': acc + [macc]
+                "Class": list(dataset.CLASSES) + ["Mean"],
+                "IoU": ious + [miou],
+                "F1": f1 + [mf1],
+                "Acc": acc + [macc],
             }
             print("mIoU : {}".format(miou))
-            print("Results saved in {}".format(eval_cfg['MODEL_PATH']))
+            print("Results saved in {}".format(eval_cfg["MODEL_PATH"]))
 
-        with open(eval_path, 'a+') as f:
-            f.writelines(eval_cfg['MODEL_PATH'])
-            f.write("\n============== Eval on {} {} images =================\n".format(case, len(dataset)))
+        with open(eval_path, "a+") as f:
+            f.writelines(eval_cfg["MODEL_PATH"])
+            f.write(
+                "\n============== Eval on {} {} images =================\n".format(
+                    case, len(dataset)
+                )
+            )
             f.write("\n")
-            print(tabulate(table, headers='keys'), file=f)
+            print(tabulate(table, headers="keys"), file=f)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', type=str, default='configs/DELIVER.yaml')
+    parser.add_argument("--cfg", type=str, default="configs/DELIVER.yaml")
     args = parser.parse_args()
 
     with open(args.cfg) as f:
