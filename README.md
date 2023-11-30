@@ -184,6 +184,8 @@ bash infer.sh
 </p>
 
 ## 🕙 ToDo
+- [ ] Tutorial on applying to a new dataset
+- [ ] Tutorial on applying the DFormer encoder to the frameworks of other tasks
 - [ ] Release the code of RGB-D pre-training.
 - ~~[-] Release the DFormer code for RGB-D salient obejct detection.~~
 
