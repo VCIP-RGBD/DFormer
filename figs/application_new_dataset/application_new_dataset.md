@@ -3,12 +3,11 @@
 
 > If there are some questions or suggestions, please raise an issue or contact us at bowenyin@mail.nankai.edu.cn.
 
-Acknowledgment to [wyw](), he apply the DFormer to his own dataset and discuss with us about how to achieve the application to new datasets. 
-And we use his dataset as the example to describe the application of DFormer to other datasets. 
+Acknowledgment to [wyw](https://github.com/wuYwen1), he apply the DFormer to his own dataset and discuss with us about how to achieve the application to new datasets. 
 The segmentation results are shown in the below:
 
 <p align="center">
-    <img src="application.jpg" width="600"  width="1000"/> <br />
+    <img src="application.jpg" width="600"  width="1200"/> <br />
     <em> 
     </em>
 </p>
