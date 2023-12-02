@@ -3,7 +3,7 @@
 
 > If there are some questions or suggestions, please raise an issue or contact us at bowenyin@mail.nankai.edu.cn.
 
-Acknowledgment to [wyw](https://github.com/wuYwen1), he apply the DFormer to his own dataset and discuss with us about how to achieve the application to new datasets. 
+Acknowledgment to [wuYwen1](https://github.com/wuYwen1), he apply the DFormer to his own dataset and discuss with us about how to achieve the application to new datasets. 
 The segmentation results are shown in the below:
 
 <p align="center">
@@ -33,7 +33,14 @@ We recommond to orginize the dataset as follows:
 ```
 
 where the \<Format\> tends to be jpg or png, the two `.txt' files are used to index the training and evaluating sets.
-We provide a [template]() to generate the indexing files. 
+<!-- We provide a [template]() to generate the indexing files. -->
+The format of the indexing files (test.txt, train.txt) are as follows:
+
+```shell
+RGB/file1_name.<format>
+```
+
+Note that we assume that the depth, RGB, and label for the same sample share the name and are in different folders.
 
 
 >Requirement: Depth maps and labels are gray images while RGB images are in RGB format.

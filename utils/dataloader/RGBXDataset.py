@@ -36,8 +36,9 @@ class RGBXDataset(data.Dataset):
             item_name = self._construct_new_file_names(self._file_length)[index]
         else:
             item_name = self._file_names[index]
-       
-        item_name=item_name.split('/')[1].split('.jpg')[0]
+
+        item_name=item_name.split('/')[1].split(self._rgb_format)[0]
+      
         rgb_path = os.path.join(self._rgb_path, item_name.replace('.jpg','').replace('.png','') + self._rgb_format)
         x_path = os.path.join(self._x_path, item_name.replace('.jpg','').replace('.png','')  + self._x_format)
         gt_path = os.path.join(self._gt_path, item_name.replace('.jpg','').replace('.png','')  + self._gt_format)
