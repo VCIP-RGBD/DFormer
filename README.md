@@ -62,7 +62,7 @@ We invite all to contribute in making it more acessible and useful. If you have 
 
 - [2023/10/26] Releasing the RGBD SOD codebase of DFormer at [DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD).
 
-
+- [2023/12/03] Adding the tutorial about adding new datasets at [Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset).
 
 
 
@@ -188,9 +188,9 @@ bash infer.sh
 </p>
 
 ## 🕙 ToDo
-- [ ] Tutorial on applying to a new dataset
 - [ ] Tutorial on applying the DFormer encoder to the frameworks of other tasks
 - [ ] Release the code of RGB-D pre-training.
+- ~~[-] Tutorial on applying to a new dataset.~~
 - ~~[-] Release the DFormer code for RGB-D salient obejct detection.~~
 
 > We invite all to contribute in making it more acessible and useful. If you have any questions or suggestions about our work, feel free to contact me via e-mail (bowenyin@mail.nankai.edu.cn) or raise an issue. 
