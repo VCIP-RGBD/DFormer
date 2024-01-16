@@ -1,7 +1,7 @@
 # CUDA_VISIBLE_DEVICES=0,1
 # config -> which model config
 # continue_fpath -> the trained pth path
-GPUS=4
+GPUS=1
 NNODES=1
 NODE_RANK=${NODE_RANK:-0}
 PORT=${PORT:-29958}
