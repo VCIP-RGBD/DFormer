@@ -1,4 +1,4 @@
-# <p align=center>`DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation`</p>
+# <p align=center>`DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation (ICLR 2024)`</p>
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/semantic-segmentation-on-nyu-depth-v2)](https://paperswithcode.com/sota/semantic-segmentation-on-nyu-depth-v2?p=dformer-rethinking-rgbd-representation)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/semantic-segmentation-on-sun-rgbd)](https://paperswithcode.com/sota/semantic-segmentation-on-sun-rgbd?p=dformer-rethinking-rgbd-representation)
@@ -64,6 +64,7 @@ We invite all to contribute in making it more acessible and useful. If you have 
 
 - [2023/12/03] Adding the tutorial about adding new datasets at [Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset).
 
+- [2024/01/16] Our DFormer is accpeted by the The International Conference on Learning Representations (ICLR 2024).
 
 
 ## 2. 🚀 Get Start
