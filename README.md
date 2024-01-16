@@ -34,6 +34,7 @@ This official repository of 'DFormer: Rethinking RGBD Representation Learning fo
 We provide the application tutorial to describe how to add new dataset in this framework at [Application to new datasets](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset).
 
 We invite all to contribute in making it more acessible and useful. If you have any questions about our work, feel free to contact me via e-mail (bowenyin@mail.nankai.edu.cn). If you are using our code and evaluation toolbox for your research, please cite this paper ([BibTeX](https://scholar.googleusercontent.com/scholar.bib?q=info:GdonbkKZMYsJ:scholar.google.com/&output=citation&scisdr=ClEqKQU5EL_6hIbkmOc:AFWwaeYAAAAAZQvigOeM_E2bhS0d1niD6tYkedk&scisig=AFWwaeYAAAAAZQvigF3P1qyHXOMhOEt-zalsD8w&scisf=4&ct=citation&cd=-1&hl=zh-CN)).
+We will release the pretrianing code and carefully optimize all the codes soon. 
 
 
 
