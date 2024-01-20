@@ -160,5 +160,5 @@ cython_debug/
 #.idea/
 
 core.*
-checkpoints
-datasets
+./checkpoints
+./datasets
