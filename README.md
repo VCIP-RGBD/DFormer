@@ -23,7 +23,7 @@
 \[[Homepage](https://yinbow.github.io/Projects/DFormer/index.html)\] 
 \[[公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ)\]
 \[[DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD)\]
-\[[DFormer-Pretrain](https://github.com/VCIP-RGBD/RGBD-Pretrain)\]
+\[[RGBD-Pretrain(You can train your own encoders)](https://github.com/VCIP-RGBD/RGBD-Pretrain)\]
 
 \[[Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset)\]
 
@@ -31,7 +31,7 @@
 <!-- This official repository contains the source code, pre-trained, trained checkpoints, and evaluation toolbox of paper 'DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation'. The technical report could be found at [arXiv](https://arxiv.org/pdf/2309.09668.pdf). 
 The code for pre-training and RGB-D saliency will be released soon. -->
 This official repository of 'DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation'.
-We provide the RGBD pretraining code in [DFormer-Pretrain](https://github.com/VCIP-RGBD/RGBD-Pretrain).
+We provide the RGBD pretraining code in [RGBD-Pretrain](https://github.com/VCIP-RGBD/RGBD-Pretrain).
 You can pretrain more powerful RGBD encoders and contribute to the RGBD research.
 
 We invite all to contribute in making it more acessible and useful. If you have any questions about our work, feel free to contact me via e-mail (bowenyin@mail.nankai.edu.cn). If you are using our code and evaluation toolbox for your research, please cite this paper ([BibTeX](https://scholar.googleusercontent.com/scholar.bib?q=info:GdonbkKZMYsJ:scholar.google.com/&output=citation&scisdr=ClEqKQU5EL_6hIbkmOc:AFWwaeYAAAAAZQvigOeM_E2bhS0d1niD6tYkedk&scisig=AFWwaeYAAAAAZQvigF3P1qyHXOMhOEt-zalsD8w&scisf=4&ct=citation&cd=-1&hl=zh-CN)).
