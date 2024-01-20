@@ -79,21 +79,42 @@ class LogFormatter(logging.Formatter):
         return '\x1b[32m{}\x1b[0m'.format(msg)
 
 
-def get_logger(log_dir=None, log_file=None, formatter=LogFormatter):
+def get_logger_old(log_dir=None, log_file=None, formatter=LogFormatter):
     logger = logging.getLogger()
     logger.setLevel(_default_level)
     del logger.handlers[:]
 
     if log_dir and log_file:
         pyt_utils.ensure_dir(log_dir)
-        LogFormatter.log_fout = True
+        formatter=formatter(datefmt='%d %H:%M:%S')
+        formatter.log_fout = True
         file_handler = logging.FileHandler(log_file, mode='a')
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
 
     stream_handler = logging.StreamHandler()
-    stream_handler.setFormatter(formatter(datefmt='%d %H:%M:%S'))
+    stream_handler.setFormatter(formatter)
     stream_handler.setLevel(0)
     logger.addHandler(stream_handler)
+    return logger
+
+def get_logger(log_dir=None, log_file=None, rank=0):
+    logger = logging.getLogger()
+    logger.setLevel(level=logging.INFO)
+    del logger.handlers[:]
+    formatter = logging.Formatter('%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+
+    if rank == 0:
+        if log_dir and log_file:
+            file_handler = logging.FileHandler(log_file)
+            file_handler.setLevel(level=logging.INFO)
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
+
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.DEBUG)
+        stream_handler.setFormatter(formatter)
+
+        logger.addHandler(stream_handler)
     return logger
