@@ -22,7 +22,7 @@ python -m torch.distributed.launch \
 # local_configs.NYUDepthv2.DFormer_Tiny
 
 # config for DFormers on SUNRGBD 
-# local_configs.SUNRGBD.SUNRGBD_DFormer_Large
-# local_configs.SUNRGBD.SUNRGBD_DFormer_Base
-# local_configs.SUNRGBD.SUNRGBD_DFormer_Small
-# local_configs.SUNRGBD.SUNRGBD_DFormer_Tiny
+# local_configs.SUNRGBD.DFormer_Large
+# local_configs.SUNRGBD.DFormer_Base
+# local_configs.SUNRGBD.DFormer_Small
+# local_configs.SUNRGBD.DFormer_Tiny
