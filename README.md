@@ -35,7 +35,6 @@ We provide the RGBD pretraining code in [RGBD-Pretrain](https://github.com/VCIP-
 You can pretrain more powerful RGBD encoders and contribute to the RGBD research.
 
 We invite all to contribute in making it more acessible and useful. If you have any questions about our work, feel free to contact me via e-mail (bowenyin@mail.nankai.edu.cn). If you are using our code and evaluation toolbox for your research, please cite this paper ([BibTeX](https://scholar.googleusercontent.com/scholar.bib?q=info:GdonbkKZMYsJ:scholar.google.com/&output=citation&scisdr=ClEqKQU5EL_6hIbkmOc:AFWwaeYAAAAAZQvigOeM_E2bhS0d1niD6tYkedk&scisig=AFWwaeYAAAAAZQvigF3P1qyHXOMhOEt-zalsD8w&scisf=4&ct=citation&cd=-1&hl=zh-CN)).
-We will release the pretrianing code and carefully optimize all the codes soon. 
 
 
 
@@ -46,12 +45,12 @@ We will release the pretrianing code and carefully optimize all the codes soon.
     </em>
 </p>
 
-<p align="center">
+<!-- <p align="center">
     <img src="figs/overview.jpg" width="600"  width="1200"/> <br />
     <em> 
     Figure 2: Overview of the DFormer.
     </em>
-</p>
+</p> -->
 
 
 
@@ -94,8 +93,8 @@ By default, you can put datasets into the folder 'datasets' or use 'ln -s path_t
 |:---: |:---:|:---:|:---:|
 - **Checkpoints:** 
 
-ImageNet-1K Pre-trained DFormers T/S/B/L can be downloaded at 
-
+ImageNet-1K Pre-trained DFormers T/S/B/L and NYUDepth or SUNRGBD trained DFormers T/S/B/L can be downloaded at:
+<!-- 
 | Pre-trained | [GoogleDrive](https://drive.google.com/drive/folders/1YuW7qUtnguUFkhC-sfqGySrerjK0rZJX?usp=sharing) | [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/EhTTF_ZofnFIkz2WSDFAiiIBEIubZUpIwDQYwm9Hvxwu8Q?e=x8XumL) | [BaiduNetdisk](https://pan.baidu.com/s/1JlexzFqMcZOXPNiNkE1zRA?pwd=gct6) | 
 |:---: |:---:|:---:|:---:|
 
@@ -110,13 +109,22 @@ NYUDepth v2 trained DFormers T/S/B/L can be downloaded at
 *SUNRGBD 
 
 | SUNRGBD | [GoogleDrive](https://drive.google.com/drive/folders/1b005OUO8QXzh0sJM4iykns_UdlbMNZb8?usp=sharing) | [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/EiNdyUV486BFvb7H2yJWSCMBElOj-m6EppIy4dSXNX-yNw?e=fu2Che) | [BaiduNetdisk](https://pan.baidu.com/s/1D6UMiBv6fApV5lafo9J04w?pwd=7ewv) | 
-|:---: |:---:|:---:|:---:|
+|:---: |:---:|:---:|:---:| -->
+
+
+| Weights | GoogleDrive | OneDrive | BaiduNetdisk|
+|-------|-------| - | - |
+| Pretrained | [GoogleDrive](https://drive.google.com/drive/folders/1YuW7qUtnguUFkhC-sfqGySrerjK0rZJX?usp=sharing) | [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/EhTTF_ZofnFIkz2WSDFAiiIBEIubZUpIwDQYwm9Hvxwu8Q?e=x8XumL) | [BaiduNetdisk](https://pan.baidu.com/s/1JlexzFqMcZOXPNiNkE1zRA?pwd=gct6) | 
+|NYUDepthv2 (57.2mIoU)|[GoogleDrive](https://drive.google.com/drive/folders/1P5HwnAvifEI6xiTAx6id24FUCt_i7GH8?usp=sharing) | [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/ErAmlYuhS6FCqGQZNGZy0_EBYgJsK3pFTsi2q9g14MEE_A?e=VoKUAf) | [BaiduNetdisk](https://pan.baidu.com/s/1AkvlsAvJPv21bz2sXlrADQ?pwd=6vuu) | 
+|SUNRGBD (52.5mIoU)|[GoogleDrive](https://drive.google.com/drive/folders/1b005OUO8QXzh0sJM4iykns_UdlbMNZb8?usp=sharing) | [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/EiNdyUV486BFvb7H2yJWSCMBElOj-m6EppIy4dSXNX-yNw?e=fu2Che) | [BaiduNetdisk](https://pan.baidu.com/s/1D6UMiBv6fApV5lafo9J04w?pwd=7ewv) | 
 
 
  <br />
 
-Orgnize the checkpoints and dataset folder in the following structure:
 
+<details>
+<summary>Orgnize the checkpoints and dataset folder in the following structure:</summary>
+<pre><code>
 
 ```shell
 <checkpoints>
@@ -144,6 +152,10 @@ Orgnize the checkpoints and dataset folder in the following structure:
 |-- <DatasetName2>
 |-- ...
 ```
+
+</code></pre>
+</details>
+
 
 
 
@@ -184,11 +196,11 @@ bash infer.sh
     </em>
 </p>
 
-<p align="center">
+<!-- <p align="center">
     <img src="figs/Sal.jpg" width="600"  width="1200"/> <br />
     <em> 
     </em>
-</p>
+</p> -->
 
 ## 🕙 ToDo
 - [ ] Tutorial on applying the DFormer encoder to the frameworks of other tasks
