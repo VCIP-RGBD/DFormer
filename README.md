@@ -19,13 +19,16 @@
 > [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN)
 
 
-\[[Paper](https://arxiv.org/pdf/2309.09668.pdf)\] 
-\[[Homepage](https://yinbow.github.io/Projects/DFormer/index.html)\] 
-\[[公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ)\]
-\[[DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD)\]
-\[[RGBD-Pretrain(You can train your own encoders)](https://github.com/VCIP-RGBD/RGBD-Pretrain)\]
+[Paper Link](https://arxiv.org/pdf/2309.09668.pdf) | 
+[Homepage](https://yinbow.github.io/Projects/DFormer/index.html) |
+[公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ) |
+[DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD) |
 
-\[[Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset)\]
+
+:robot:[RGBD-Pretrain(You can train your own encoders)](https://github.com/VCIP-RGBD/RGBD-Pretrain)
+
+:anchor:[Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset)
+
 
 
 <!-- This official repository contains the source code, pre-trained, trained checkpoints, and evaluation toolbox of paper 'DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation'. The technical report could be found at [arXiv](https://arxiv.org/pdf/2309.09668.pdf). 
