@@ -62,13 +62,13 @@ We invite all to contribute in making it more acessible and useful. If you have 
 
 ## 1. 🌟  NEWS 
 
-- [2023/09/05] Releasing the codebase of DFormer and all the pre-trained checkpoints.
+<!-- - [2023/09/05] Releasing the codebase of DFormer and all the pre-trained checkpoints.
 
 - [2023/10/26] Releasing the RGBD SOD codebase of DFormer at [DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD).
 
-- [2023/12/03] Adding the tutorial about adding new datasets at [Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset).
+- [2023/12/03] Adding the tutorial about adding new datasets at [Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset). -->
 
-- [2024/01/16] Our DFormer is accpeted by the The International Conference on Learning Representations (ICLR 2024).
+- [2024/01/16] Our DFormer has been accpeted by The International Conference on Learning Representations (ICLR 2024).
 
 
 ## 2. 🚀 Get Start
