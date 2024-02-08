@@ -19,7 +19,7 @@
 > [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN)
 
 
-[Paper Link](https://arxiv.org/pdf/2309.09668.pdf) | 
+[Paper Link](https://arxiv.org/abs/2309.09668) | 
 [Homepage](https://yinbow.github.io/Projects/DFormer/index.html) |
 [公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ) |
 [DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD) |
