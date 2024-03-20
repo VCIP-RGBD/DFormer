@@ -196,6 +196,12 @@ bash eval.sh
 bash infer.sh
 ```
 
+**5. FLOPs & Parameters.**
+
+```
+PYTHONPATH="$(dirname $0)/..":$PYTHONPATH python benchmark.py --config local_configs.NYUDepthv2.DFormer_Large
+```
+
 
 ## 🚩 Performance
 
