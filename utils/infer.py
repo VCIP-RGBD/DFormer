@@ -171,6 +171,7 @@ with Engine(custom_parser=parser) as engine:
                 [0.5, 0.75, 1.0, 1.25, 1.5],
                 True,
                 engine,
+                save_dir=args.save_path,
             )
             ious, miou = metric.compute_iou()
             acc, macc = metric.compute_pixel_acc()
