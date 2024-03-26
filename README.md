@@ -202,6 +202,14 @@ bash infer.sh
 PYTHONPATH="$(dirname $0)/..":$PYTHONPATH python benchmark.py --config local_configs.NYUDepthv2.DFormer_Large
 ```
 
+**6. Latency.**
+
+```
+PYTHONPATH="$(dirname $0)/..":$PYTHONPATH python utils/latency.py --config local_configs.NYUDepthv2.DFormer_Large
+```
+
+ps: The latency highly depends on the devices. It is recommended to compare the latency on the same devices. 
+
 
 ## 🚩 Performance
 
