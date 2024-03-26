@@ -1,12 +1,17 @@
-# Original: https://blog.csdn.net/Caesar6666/article/details/117926306
+# Modified from: https://blog.csdn.net/Caesar6666/article/details/117926306
 
 import numpy as np
 import torch
 from torch.backends import cudnn
 import tqdm
-from local_configs.NYUDepthv2.DFormer_Large import config as cfg
 from models.builder import EncoderDecoder as segmodel
 import torch.nn as nn
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", help="train config file path")
+args = parser.parse_args()
+# config network and criterion
+cfg = getattr(import_module(args.config), "C")
 
 criterion = nn.CrossEntropyLoss(reduction="mean", ignore_index=cfg.background)
 BatchNorm2d = nn.SyncBatchNorm
