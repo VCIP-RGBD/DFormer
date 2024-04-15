@@ -23,6 +23,7 @@
 [Homepage](https://yinbow.github.io/Projects/DFormer/index.html) |
 [公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ) |
 [DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD) |
+[Poster](https://iclr.cc/virtual/2024/poster/18117)|
 
 
 :robot:[RGBD-Pretrain(You can train your own encoders)](https://github.com/VCIP-RGBD/RGBD-Pretrain)
@@ -227,7 +228,7 @@ ps: The latency highly depends on the devices. It is recommended to compare the 
 
 ## 🕙 ToDo
 - [ ] Tutorial on applying the DFormer encoder to the frameworks of other tasks
-- [ ] Release the code of RGB-D pre-training.
+- ~~[-] Release the code of RGB-D pre-training.~~
 - ~~[-] Tutorial on applying to a new dataset.~~
 - ~~[-] Release the DFormer code for RGB-D salient obejct detection.~~
 
