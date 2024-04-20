@@ -81,7 +81,7 @@ with Engine(custom_parser=parser) as engine:
     weight = torch.load(args.continue_fpath)["model"]
 
     print("load model")
-    model.load_state_dict(weight)
+    model.load_state_dict(weight,strict=False)
 
     if engine.distributed:
         logger.info(".............distributed training.............")

@@ -9,7 +9,7 @@ import argparse
 C = edict()
 config = C
 
-# C.seed = 12345
+C.seed = 12345
 
 # remoteip = os.popen('pwd').read()
 C.root_dir = "datasets"  # os.path.abspath(os.path.join(os.getcwd(), './'))

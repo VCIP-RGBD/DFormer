@@ -30,76 +30,88 @@ import cv2
 # from semseg.utils.utils import fix_seeds, setup_cudnn, cleanup_ddp, setup_ddp, get_logger, cal_flops, print_iou
 
 
-def pad_image(img, target_size):
-    rows_to_pad = max(target_size[0] - img.shape[2], 0)
-    cols_to_pad = max(target_size[1] - img.shape[3], 0)
-    padded_img = F.pad(img, (0, cols_to_pad, 0, rows_to_pad), "constant", 0)
-    return padded_img
+# def pad_image(img, target_size):
+#     rows_to_pad = max(target_size[0] - img.shape[2], 0)
+#     cols_to_pad = max(target_size[1] - img.shape[3], 0)
+#     padded_img = F.pad(img, (0, cols_to_pad, 0, rows_to_pad), "constant", 0)
+#     return padded_img
+
+
+# @torch.no_grad()
+# def sliding_predict(model, image, num_classes, flip=True):
+#     image_size = image[0].shape
+#     tile_size = (int(ceil(image_size[2] * 1)), int(ceil(image_size[3] * 1)))
+#     overlap = 1 / 3
+
+#     stride = ceil(tile_size[0] * (1 - overlap))
+
+#     num_rows = int(ceil((image_size[2] - tile_size[0]) / stride) + 1)
+#     num_cols = int(ceil((image_size[3] - tile_size[1]) / stride) + 1)
+#     total_predictions = torch.zeros(
+#         (num_classes, image_size[2], image_size[3]), device=torch.device("cuda")
+#     )
+#     count_predictions = torch.zeros(
+#         (image_size[2], image_size[3]), device=torch.device("cuda")
+#     )
+#     tile_counter = 0
+
+#     for row in range(num_rows):
+#         for col in range(num_cols):
+#             x_min, y_min = int(col * stride), int(row * stride)
+#             x_max = min(x_min + tile_size[1], image_size[3])
+#             y_max = min(y_min + tile_size[0], image_size[2])
+
+#             img = [modal[:, :, y_min:y_max, x_min:x_max] for modal in image]
+#             padded_img = [pad_image(modal, tile_size) for modal in img]
+#             tile_counter += 1
+#             # print(padded_img[0].shape,padded_img[1].shape)
+#             padded_prediction = model(padded_img[0], padded_img[1])
+#             if flip:
+#                 fliped_img = [padded_modal.flip(-1) for padded_modal in padded_img]
+#                 fliped_predictions = model(fliped_img[0], fliped_img[1])
+#                 padded_prediction += fliped_predictions.flip(-1)
+#             predictions = padded_prediction[:, :, : img[0].shape[2], : img[0].shape[3]]
+#             count_predictions[y_min:y_max, x_min:x_max] += 1
+#             total_predictions[:, y_min:y_max, x_min:x_max] += predictions.squeeze(0)
+
+#     return total_predictions.unsqueeze(0)
 
 
 @torch.no_grad()
-def sliding_predict(model, image, num_classes, flip=True):
-    image_size = image[0].shape
-    tile_size = (int(ceil(image_size[2] * 1)), int(ceil(image_size[3] * 1)))
-    overlap = 1 / 3
-
-    stride = ceil(tile_size[0] * (1 - overlap))
-
-    num_rows = int(ceil((image_size[2] - tile_size[0]) / stride) + 1)
-    num_cols = int(ceil((image_size[3] - tile_size[1]) / stride) + 1)
-    total_predictions = torch.zeros(
-        (num_classes, image_size[2], image_size[3]), device=torch.device("cuda")
-    )
-    count_predictions = torch.zeros(
-        (image_size[2], image_size[3]), device=torch.device("cuda")
-    )
-    tile_counter = 0
-
-    for row in range(num_rows):
-        for col in range(num_cols):
-            x_min, y_min = int(col * stride), int(row * stride)
-            x_max = min(x_min + tile_size[1], image_size[3])
-            y_max = min(y_min + tile_size[0], image_size[2])
-
-            img = [modal[:, :, y_min:y_max, x_min:x_max] for modal in image]
-            padded_img = [pad_image(modal, tile_size) for modal in img]
-            tile_counter += 1
-            # print(padded_img[0].shape,padded_img[1].shape)
-            padded_prediction = model(padded_img[0], padded_img[1])
-            if flip:
-                fliped_img = [padded_modal.flip(-1) for padded_modal in padded_img]
-                fliped_predictions = model(fliped_img[0], fliped_img[1])
-                padded_prediction += fliped_predictions.flip(-1)
-            predictions = padded_prediction[:, :, : img[0].shape[2], : img[0].shape[3]]
-            count_predictions[y_min:y_max, x_min:x_max] += 1
-            total_predictions[:, y_min:y_max, x_min:x_max] += predictions.squeeze(0)
-
-    return total_predictions.unsqueeze(0)
-
-
-@torch.no_grad()
-def evaluate(model, dataloader, config, device, engine, save_dir=None):
+def evaluate(model, dataloader, config, device, engine, save_dir=None, sliding=False):
     print("Evaluating...")
     model.eval()
     n_classes = config.num_classes
     metrics = Metrics(n_classes, config.background, device)
-    sliding = False
 
-    for minibatch in tqdm(dataloader, dynamic_ncols=True):
-        images = minibatch["data"][0]
-        labels = minibatch["label"][0]
-        modal_xs = minibatch["modal_x"][0]
+    for idx, minibatch in enumerate(dataloader):
+        if ((idx + 1) % int(len(dataloader) * 0.5) == 0 or idx == 0) and (
+            (engine.distributed and (engine.local_rank == 0))
+            or (not engine.distributed)
+        ):
+            print(f"Validation Iter: {idx + 1} / {len(dataloader)}")
+        images = minibatch["data"]
+        labels = minibatch["label"]
+        modal_xs = minibatch["modal_x"]
+        if len(images.shape) == 3:
+            images = images.unsqueeze(0)
+        if len(modal_xs.shape) == 3:
+            modal_xs = modal_xs.unsqueeze(0)
+        if len(labels.shape) == 2:
+            labels = labels.unsqueeze(0)
         # print(images.shape,labels.shape)
         images = [images.to(device), modal_xs.to(device)]
         labels = labels.to(device)
         if sliding:
-            preds = sliding_predict(model, images, num_classes=n_classes).softmax(dim=1)
+            preds = slide_inference(model, images, modal_xs, config).softmax(dim=1)
         else:
             preds = model(images[0], images[1]).softmax(dim=1)
-        if len(labels.shape) == 2:
-            labels = labels.unsqueeze(0)
         # print(preds.shape,labels.shape)
+        B, H, W = labels.shape
         metrics.update(preds, labels)
+        # for i in range(B):
+        #     metrics.update(preds[i].unsqueeze(0), labels[i].unsqueeze(0))
+        # metrics.update(preds, labels)
 
         if save_dir is not None:
             palette = [
@@ -173,16 +185,96 @@ def evaluate(model, dataloader, config, device, engine, save_dir=None):
     return all_metrics
 
 
+def slide_inference(model, imgs, modal_xs, config):
+    """Inference by sliding-window with overlap.
+
+    If h_crop > h_img or w_crop > w_img, the small patch will be used to
+    decode without padding.
+
+    Args:
+        inputs (tensor): the tensor should have a shape NxCxHxW,
+            which contains all images in the batch.
+        batch_img_metas (List[dict]): List of image metainfo where each may
+            also contain: 'img_shape', 'scale_factor', 'flip', 'img_path',
+            'ori_shape', and 'pad_shape'.
+            For details on the values of these keys see
+            `mmseg/datasets/pipelines/formatting.py:PackSegInputs`.
+
+    Returns:
+        Tensor: The segmentation results, seg_logits from model of each
+            input image.
+    """
+
+    h_crop, w_crop = config.eval_crop_size
+
+    # new add:
+    if h_crop > imgs.shape[-2] or w_crop > imgs.shape[-1]:
+        imgs = F.interpolate(
+            imgs, size=(h_crop, w_crop), mode="bilinear", align_corners=True
+        )
+        modal_xs = F.interpolate(
+            modal_xs, size=(h_crop, w_crop), mode="bilinear", align_corners=True
+        )
+
+    h_stride, w_stride = [
+        int(config.eval_stride_rate * config.eval_crop_size[0]),
+        int(config.eval_stride_rate * config.eval_crop_size[1]),
+    ]
+    batch_size, _, h_img, w_img = imgs.shape
+    assert imgs.shape[-2:] == modal_xs.shape[-2:]
+    out_channels = config.num_classes
+    h_grids = max(h_img - h_crop + h_stride - 1, 0) // h_stride + 1
+    w_grids = max(w_img - w_crop + w_stride - 1, 0) // w_stride + 1
+    preds = imgs.new_zeros((batch_size, out_channels, h_img, w_img))
+    count_mat = imgs.new_zeros((batch_size, 1, h_img, w_img))
+    for h_idx in range(h_grids):
+        for w_idx in range(w_grids):
+            y1 = h_idx * h_stride
+            x1 = w_idx * w_stride
+            y2 = min(y1 + h_crop, h_img)
+            x2 = min(x1 + w_crop, w_img)
+            y1 = max(y2 - h_crop, 0)
+            x1 = max(x2 - w_crop, 0)
+            crop_img = imgs[:, :, y1:y2, x1:x2]
+            crop_modal_xs = modal_xs[:, :, y1:y2, x1:x2]
+            # the output of encode_decode is seg logits tensor map
+            # with shape [N, C, H, W]
+            crop_seg_logit = model(crop_img, crop_modal_xs)
+            preds += F.pad(
+                crop_seg_logit,
+                (int(x1), int(preds.shape[3] - x2), int(y1), int(preds.shape[2] - y2)),
+            )
+
+            count_mat[:, :, y1:y2, x1:x2] += 1
+    assert (count_mat == 0).sum() == 0
+    seg_logits = preds / count_mat
+
+    return seg_logits
+
+
 @torch.no_grad()
 def evaluate_msf(
-    model, dataloader, config, device, scales, flip, engine, save_dir=None
+    model,
+    dataloader,
+    config,
+    device,
+    scales,
+    flip,
+    engine,
+    save_dir=None,
+    sliding=False,
 ):
     model.eval()
 
     n_classes = config.num_classes
     metrics = Metrics(n_classes, config.background, device)
 
-    for minibatch in tqdm(dataloader):
+    for idx, minibatch in enumerate(dataloader):
+        if ((idx + 1) % int(len(dataloader) * 0.5) == 0 or idx == 0) and (
+            (engine.distributed and (engine.local_rank == 0))
+            or (not engine.distributed)
+        ):
+            print(f"Validation Iter: {idx + 1} / {len(dataloader)}")
         images = minibatch["data"]
         labels = minibatch["label"]
         modal_xs = minibatch["modal_x"]
@@ -205,7 +297,12 @@ def evaluate_msf(
                 for img in images
             ]
             scaled_images = [scaled_img.to(device) for scaled_img in scaled_images]
-            logits = model(scaled_images[0], scaled_images[1])
+            if sliding:
+                logits = slide_inference(
+                    model, scaled_images[0], scaled_images[1], config
+                )
+            else:
+                logits = model(scaled_images[0], scaled_images[1])
             logits = F.interpolate(
                 logits, size=(H, W), mode="bilinear", align_corners=True
             )
@@ -215,7 +312,12 @@ def evaluate_msf(
                 scaled_images = [
                     torch.flip(scaled_img, dims=(3,)) for scaled_img in scaled_images
                 ]
-                logits = model(scaled_images[0], scaled_images[1])
+                if sliding:
+                    logits = slide_inference(
+                        model, scaled_images[0], scaled_images[1], config
+                    )
+                else:
+                    logits = model(scaled_images[0], scaled_images[1])
                 logits = torch.flip(logits, dims=(3,))
                 logits = F.interpolate(
                     logits, size=(H, W), mode="bilinear", align_corners=True

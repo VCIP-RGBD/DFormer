@@ -161,5 +161,18 @@ cython_debug/
 
 core.*
 checkpoints
-datasets
+datasets/NYU*
+datasets/rgbd*
+datasets/SUN*
 output
+*_old*
+.history
+*.ipynb
+pyrightconfig.json
+train*.sh
+eval*.sh
+
+# temp ignore:
+models/decoders/near_far.py
+**/*_temp*
+*rgbdnew*

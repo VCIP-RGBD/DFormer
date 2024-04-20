@@ -76,12 +76,16 @@ We invite all to contribute in making it more acessible and useful. If you have 
 
 **0. Install**
 
-```
+```bash
 conda create -n dformer python=3.10 -y
 conda activate dformer
-pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
-pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.11/index.html
-pip install tqdm opencv-python scipy tensorboardX tabulate easydict
+
+# CUDA 11.8
+conda install pytorch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 pytorch-cuda=11.8 -c pytorch -c nvidia
+
+pip install mmcv==2.1.0 -f https://download.openmmlab.com/mmcv/dist/cu118/torch2.1/index.html
+
+pip install tqdm opencv-python scipy tensorboardX tabulate easydict ftfy regex
 ```
 
 

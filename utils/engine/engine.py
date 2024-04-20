@@ -55,7 +55,8 @@ class Engine(object):
         print(self.distributed)
 
         if self.distributed:
-            self.local_rank = self.args.local_rank
+            # self.local_rank = self.args.local_rank
+            self.local_rank = int(os.environ['LOCAL_RANK'])
             self.world_size = int(os.environ["WORLD_SIZE"])
             torch.cuda.set_device(self.local_rank)
             os.environ["MASTER_ADDR"] = "127.0.0.1"

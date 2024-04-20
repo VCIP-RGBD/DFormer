@@ -9,11 +9,13 @@ import torch.nn.functional as F
 import torch.utils.checkpoint as cp
 from mmcv.cnn import build_norm_layer
 from mmcv.cnn.bricks.transformer import FFN, build_dropout
-from mmcv.cnn.utils.weight_init import (constant_init, trunc_normal_,
-                                        trunc_normal_init)
-from mmcv.runner import (BaseModule, CheckpointLoader, ModuleList,
-                         load_state_dict)
-from mmcv.utils import to_2tuple
+# from mmcv.cnn.utils.weight_init import (constant_init, trunc_normal_,
+#                                         trunc_normal_init)
+# from mmcv.runner import (BaseModule, CheckpointLoader, ModuleList,
+#                          load_state_dict)
+from mmengine.model.base_module import BaseModule
+from mmengine.runner.checkpoint import load_state_dict
+# from mmcv.utils import to_2tuple
 import math
 
 class LayerNorm(nn.Module):
@@ -241,15 +243,15 @@ class DFormer(BaseModule):
             cur += depths[i]
 
        
-        for i in out_indices:
-            layer = LayerNorm(dims[i], eps=1e-6, data_format="channels_first")
-            layer_name = f'norm{i}'
-            self.add_module(layer_name, layer)
+        # for i in out_indices:
+        #     layer = LayerNorm(dims[i], eps=1e-6, data_format="channels_first")
+        #     layer_name = f'norm{i}'
+        #     self.add_module(layer_name, layer)
 
 
     def init_weights(self,pretrained):
        
-        _state_dict=torch.load(pretrained, map_location=torch.device('cpu'))
+        _state_dict=torch.load(pretrained)
         if 'state_dict_ema' in _state_dict.keys():
             _state_dict=_state_dict['state_dict_ema']
         else:
@@ -292,7 +294,7 @@ class DFormer(BaseModule):
             x = x.permute(0, 3, 1, 2)
             x_e = x_e.permute(0, 3, 1, 2)
             outs.append(x)
-        return outs
+        return outs,None
 
 def DFormer_Tiny(pretrained=False, **kwargs):   # 81.5
     model = DFormer(dims=[32, 64, 128, 256], mlp_ratios=[8, 8, 4, 4], depths=[3, 3, 5, 2], num_heads=[1, 2, 4, 8], windows=[0, 7, 7, 7], **kwargs)
