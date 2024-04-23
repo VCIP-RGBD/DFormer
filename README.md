@@ -23,7 +23,6 @@
 [Homepage](https://yinbow.github.io/Projects/DFormer/index.html) |
 [公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ) |
 [DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD) |
-[Poster](https://iclr.cc/virtual/2024/poster/18117)|
 
 
 :robot:[RGBD-Pretrain(You can train your own encoders)](https://github.com/VCIP-RGBD/RGBD-Pretrain)
@@ -70,6 +69,7 @@ We invite all to contribute in making it more acessible and useful. If you have 
 - [2023/12/03] Adding the tutorial about adding new datasets at [Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset). -->
 
 - [2024/01/16] Our DFormer has been accpeted by The International Conference on Learning Representations (ICLR 2024).
+- [2024/04/21] We have upgraded and optimized the framework, greatly reducing training time, i.e., training duration for DFormer-L is reduced to ~12h from over 1day.
 
 
 ## 2. 🚀 Get Start
