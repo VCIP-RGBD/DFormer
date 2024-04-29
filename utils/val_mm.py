@@ -149,7 +149,7 @@ def evaluate(model, dataloader, config, device, engine, save_dir=None, sliding=F
             if config.dataset_name in ["KITTI-360", "EventScape"]:
                 preds = palette[preds]
                 plt.imsave(save_name, preds)
-            elif config.dataset_name in ["NYUDepthv2"]:
+            elif config.dataset_name in ["NYUDepthv2", "SUNRGBD"]:
                 palette = np.load("./utils/nyucmap.npy")
                 preds = palette[preds]
                 plt.imsave(save_name, preds)
@@ -360,7 +360,7 @@ def evaluate_msf(
             if config.dataset_name in ["KITTI-360", "EventScape"]:
                 preds = palette[preds]
                 plt.imsave(save_name, preds)
-            elif config.dataset_name in ["NYUDepthv2"]:
+            elif config.dataset_name in ["NYUDepthv2", "SUNRGBD"]:
                 palette = np.load("./utils/nyucmap.npy")
                 preds = palette[preds]
                 plt.imsave(save_name, preds)
