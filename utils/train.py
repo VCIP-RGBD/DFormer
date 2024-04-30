@@ -156,7 +156,7 @@ with Engine(custom_parser=parser) as engine:
         engine,
         RGBXDataset,
         config,
-        val_batch_size=int(config.batch_size * val_dl_factor),
+        val_batch_size=int(config.batch_size * val_dl_factor) if config.dataset_name!="SUNRGBD" else int(args.gpus),
     )
     logger.info(f"val dataset len:{len(val_loader)*int(args.gpus)}")
 

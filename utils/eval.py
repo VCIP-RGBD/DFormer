@@ -54,11 +54,11 @@ with Engine(custom_parser=parser) as engine:
 
     if args.mst:
         val_loader, val_sampler = get_val_loader(
-            engine, RGBXDataset, config, val_batch_size=int(config.batch_size * 1.5)
+            engine, RGBXDataset, config, val_batch_size=int(config.batch_size * 1.5) if config.dataset_name!="SUNRGBD" else int(args.gpus)
         )
     else:
         val_loader, val_sampler = get_val_loader(
-            engine, RGBXDataset, config, val_batch_size=int(config.batch_size * 2)
+            engine, RGBXDataset, config, val_batch_size=int(config.batch_size * 2) if config.dataset_name!="SUNRGBD" else int(args.gpus)
         )
     logger.info(f"val dataset len:{len(val_loader)*int(args.gpus)}")
 
