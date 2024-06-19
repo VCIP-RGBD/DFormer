@@ -7,7 +7,7 @@ MASTER_ADDR=${MASTER_ADDR:-"127.0.0.1"}
 export CUDA_VISIBLE_DEVICES="0,1"
 export TORCHDYNAMO_VERBOSE=1
 
-PYTHONPATH="$(dirname $0)/..":$PYTHONPATH \
+PYTHONPATH="$(dirname $0)/..":"$(dirname $0)":$PYTHONPATH \
 python -m torch.distributed.launch  \
     --nnodes=$NNODES \
     --node_rank=$NODE_RANK \
