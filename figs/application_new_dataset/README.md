@@ -14,6 +14,8 @@ The segmentation results are shown in the below:
 
 ## 1. 🌟  Prepare your own data
 
+If your dataset not contain the label, it is suggested to use [labelme](https://github.com/wkentaro/labelme) to label the data.
+
 We recommond to orginize the dataset as follows:
 
 
