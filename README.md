@@ -246,12 +246,13 @@ ps: The latency highly depends on the devices. It is recommended to compare the 
 ## Reference
 You may want to cite:
 ```
-@article{yin2023dformer,
+@inproceedings{yin2024dformer,
   title={DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation},
-  author={Yin, Bowen and Zhang, Xuying and Li, Zhongyu and Liu, Li and Cheng, Ming-Ming and Hou, Qibin},
-  journal={arXiv preprint arXiv:2309.09668},
-  year={2023}
+  author={Yin, Bowen and Zhang, Xuying and Li, Zhong-Yu and Liu, Li and Cheng, Ming-Ming and Hou, Qibin},
+  booktitle={ICLR},
+  year={2024}
 }
+
 ```
 
 
