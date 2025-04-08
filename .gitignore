@@ -164,15 +164,16 @@ checkpoints
 datasets/NYU*
 datasets/rgbd*
 datasets/SUN*
-output
+datasets/*
+output*
 *_old*
 .history
 *.ipynb
 pyrightconfig.json
 train*.sh
 eval*.sh
+infer*.sh
+.ruff_cache
 
 # temp ignore:
-models/decoders/near_far.py
 **/*_temp*
-*rgbdnew*

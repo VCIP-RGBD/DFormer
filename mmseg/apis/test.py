@@ -25,21 +25,22 @@ def np2tmp(array, temp_file_name=None, tmpdir=None):
     """
 
     if temp_file_name is None:
-        temp_file_name = tempfile.NamedTemporaryFile(
-            suffix='.npy', delete=False, dir=tmpdir).name
+        temp_file_name = tempfile.NamedTemporaryFile(suffix=".npy", delete=False, dir=tmpdir).name
     np.save(temp_file_name, array)
     return temp_file_name
 
 
-def single_gpu_test(model,
-                    data_loader,
-                    show=False,
-                    out_dir=None,
-                    efficient_test=False,
-                    opacity=0.5,
-                    pre_eval=False,
-                    format_only=False,
-                    format_args={}):
+def single_gpu_test(
+    model,
+    data_loader,
+    show=False,
+    out_dir=None,
+    efficient_test=False,
+    opacity=0.5,
+    pre_eval=False,
+    format_only=False,
+    format_args={},
+):
     """Test with single GPU by progressive mode.
 
     Args:
@@ -66,14 +67,15 @@ def single_gpu_test(model,
     """
     if efficient_test:
         warnings.warn(
-            'DeprecationWarning: ``efficient_test`` will be deprecated, the '
-            'evaluation is CPU memory friendly with pre_eval=True')
-        mmcv.mkdir_or_exist('.efficient_test')
+            "DeprecationWarning: ``efficient_test`` will be deprecated, the "
+            "evaluation is CPU memory friendly with pre_eval=True"
+        )
+        mmcv.mkdir_or_exist(".efficient_test")
     # when none of them is set true, return segmentation results as
     # a list of np.array.
-    assert [efficient_test, pre_eval, format_only].count(True) <= 1, \
-        '``efficient_test``, ``pre_eval`` and ``format_only`` are mutually ' \
-        'exclusive, only one of them could be true .'
+    assert [efficient_test, pre_eval, format_only].count(True) <= 1, (
+        "``efficient_test``, ``pre_eval`` and ``format_only`` are mutually exclusive, only one of them could be true ."
+    )
 
     model.eval()
     results = []
@@ -91,37 +93,32 @@ def single_gpu_test(model,
             result = model(return_loss=False, **data)
 
         if show or out_dir:
-            img_tensor = data['img'][0]
-            img_metas = data['img_metas'][0].data[0]
-            imgs = tensor2imgs(img_tensor, **img_metas[0]['img_norm_cfg'])
+            img_tensor = data["img"][0]
+            img_metas = data["img_metas"][0].data[0]
+            imgs = tensor2imgs(img_tensor, **img_metas[0]["img_norm_cfg"])
             assert len(imgs) == len(img_metas)
 
             for img, img_meta in zip(imgs, img_metas):
-                h, w, _ = img_meta['img_shape']
+                h, w, _ = img_meta["img_shape"]
                 img_show = img[:h, :w, :]
 
-                ori_h, ori_w = img_meta['ori_shape'][:-1]
+                ori_h, ori_w = img_meta["ori_shape"][:-1]
                 img_show = mmcv.imresize(img_show, (ori_w, ori_h))
 
                 if out_dir:
-                    out_file = osp.join(out_dir, img_meta['ori_filename'])
+                    out_file = osp.join(out_dir, img_meta["ori_filename"])
                 else:
                     out_file = None
 
                 model.module.show_result(
-                    img_show,
-                    result,
-                    palette=dataset.PALETTE,
-                    show=show,
-                    out_file=out_file,
-                    opacity=opacity)
+                    img_show, result, palette=dataset.PALETTE, show=show, out_file=out_file, opacity=opacity
+                )
 
         if efficient_test:
-            result = [np2tmp(_, tmpdir='.efficient_test') for _ in result]
+            result = [np2tmp(_, tmpdir=".efficient_test") for _ in result]
 
         if format_only:
-            result = dataset.format_results(
-                result, indices=batch_indices, **format_args)
+            result = dataset.format_results(result, indices=batch_indices, **format_args)
         if pre_eval:
             # TODO: adapt samples_per_gpu > 1.
             # only samples_per_gpu=1 valid now
@@ -137,14 +134,16 @@ def single_gpu_test(model,
     return results
 
 
-def multi_gpu_test(model,
-                   data_loader,
-                   tmpdir=None,
-                   gpu_collect=False,
-                   efficient_test=False,
-                   pre_eval=False,
-                   format_only=False,
-                   format_args={}):
+def multi_gpu_test(
+    model,
+    data_loader,
+    tmpdir=None,
+    gpu_collect=False,
+    efficient_test=False,
+    pre_eval=False,
+    format_only=False,
+    format_args={},
+):
     """Test model with multiple gpus by progressive mode.
 
     This method tests model with multiple gpus and collects the results
@@ -177,14 +176,15 @@ def multi_gpu_test(model,
     """
     if efficient_test:
         warnings.warn(
-            'DeprecationWarning: ``efficient_test`` will be deprecated, the '
-            'evaluation is CPU memory friendly with pre_eval=True')
-        mmcv.mkdir_or_exist('.efficient_test')
+            "DeprecationWarning: ``efficient_test`` will be deprecated, the "
+            "evaluation is CPU memory friendly with pre_eval=True"
+        )
+        mmcv.mkdir_or_exist(".efficient_test")
     # when none of them is set true, return segmentation results as
     # a list of np.array.
-    assert [efficient_test, pre_eval, format_only].count(True) <= 1, \
-        '``efficient_test``, ``pre_eval`` and ``format_only`` are mutually ' \
-        'exclusive, only one of them could be true .'
+    assert [efficient_test, pre_eval, format_only].count(True) <= 1, (
+        "``efficient_test``, ``pre_eval`` and ``format_only`` are mutually exclusive, only one of them could be true ."
+    )
 
     model.eval()
     results = []
@@ -208,11 +208,10 @@ def multi_gpu_test(model,
             result = model(return_loss=False, rescale=True, **data)
 
         if efficient_test:
-            result = [np2tmp(_, tmpdir='.efficient_test') for _ in result]
+            result = [np2tmp(_, tmpdir=".efficient_test") for _ in result]
 
         if format_only:
-            result = dataset.format_results(
-                result, indices=batch_indices, **format_args)
+            result = dataset.format_results(result, indices=batch_indices, **format_args)
         if pre_eval:
             # TODO: adapt samples_per_gpu > 1.
             # only samples_per_gpu=1 valid now

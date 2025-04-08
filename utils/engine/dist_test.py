@@ -17,9 +17,20 @@ logger = get_logger()
 
 
 class Evaluator(object):
-    def __init__(self, dataset, class_num, image_mean, image_std, network,
-                 multi_scales, is_flip, devices,
-                 verbose=False, save_path=None, show_image=False):
+    def __init__(
+        self,
+        dataset,
+        class_num,
+        image_mean,
+        image_std,
+        network,
+        multi_scales,
+        is_flip,
+        devices,
+        verbose=False,
+        save_path=None,
+        show_image=False,
+    ):
         self.dataset = dataset
         self.ndata = self.dataset.get_length()
         self.class_num = class_num
@@ -30,7 +41,7 @@ class Evaluator(object):
         self.network = network
         self.devices = devices
 
-        self.context = mp.get_context('spawn')
+        self.context = mp.get_context("spawn")
         self.val_func = None
         self.results_queue = self.context.Queue(self.ndata)
 
@@ -42,13 +53,15 @@ class Evaluator(object):
 
     def run(self, model_path, model_indice, log_file, log_file_link):
         """There are four evaluation modes:
-            1.only eval a .pth model: -e *.pth
-            2.only eval a certain epoch: -e epoch
-            3.eval all epochs in a given section: -e start_epoch-end_epoch
-            4.eval all epochs from a certain started epoch: -e start_epoch-
-            """
-        if '.pth' in model_indice:
-            models = [model_indice, ]
+        1.only eval a .pth model: -e *.pth
+        2.only eval a certain epoch: -e epoch
+        3.eval all epochs in a given section: -e start_epoch-end_epoch
+        4.eval all epochs from a certain started epoch: -e start_epoch-
+        """
+        if ".pth" in model_indice:
+            models = [
+                model_indice,
+            ]
         elif "-" in model_indice:
             start_epoch = int(model_indice.split("-")[0])
             end_epoch = model_indice.split("-")[1]
@@ -72,13 +85,13 @@ class Evaluator(object):
                 up_bound = model_idx <= end_epoch
             bound = up_bound * down_bound
             model_slice = np.array(sorted_models)[bound]
-            models = [os.path.join(model_path, model) for model in
-                      model_slice]
+            models = [os.path.join(model_path, model) for model in model_slice]
         else:
-            models = [os.path.join(model_path,
-                                   'epoch-%s.pth' % model_indice), ]
+            models = [
+                os.path.join(model_path, "epoch-%s.pth" % model_indice),
+            ]
 
-        results = open(log_file, 'a')
+        results = open(log_file, "a")
         link_file(log_file, log_file_link)
 
         for model in models:
@@ -86,9 +99,9 @@ class Evaluator(object):
             self.val_func = load_model(self.network, model)
             result_line = self.multi_process_evaluation()
 
-            results.write('Model: ' + model + '\n')
+            results.write("Model: " + model + "\n")
             results.write(result_line)
-            results.write('\n')
+            results.write("\n")
             results.flush()
 
         results.close()
@@ -104,10 +117,8 @@ class Evaluator(object):
             e_record = min((d + 1) * stride, self.ndata)
             shred_list = list(range(d * stride, e_record))
             device = self.devices[d]
-            logger.info(
-                'GPU %s handle %d data.' % (device, len(shred_list)))
-            p = self.context.Process(target=self.worker,
-                                     args=(shred_list, device))
+            logger.info("GPU %s handle %d data." % (device, len(shred_list)))
+            p = self.context.Process(target=self.worker, args=(shred_list, device))
             procs.append(p)
 
         for p in procs:
@@ -124,15 +135,12 @@ class Evaluator(object):
             p.join()
 
         result_line = self.compute_metric(all_results)
-        logger.info(
-            'Evaluation Elapsed Time: %.2fs' % (
-                    time.perf_counter() - start_eval_time))
+        logger.info("Evaluation Elapsed Time: %.2fs" % (time.perf_counter() - start_eval_time))
         return result_line
 
     def worker(self, shred_list, device):
         start_load_time = time.time()
-        logger.info('Load Model on Device %d: %.2fs' % (
-            device, time.time() - start_load_time))
+        logger.info("Load Model on Device %d: %.2fs" % (device, time.time() - start_load_time))
         for idx in shred_list:
             dd = self.dataset[idx]
             results_dict = self.func_per_iteration(dd, device)
@@ -153,14 +161,11 @@ class Evaluator(object):
 
         pred = self.val_func_process(img, device)
         if input_size is not None:
-            pred = pred[:, margin[0]:(pred.shape[1] - margin[1]),
-                   margin[2]:(pred.shape[2] - margin[3])]
+            pred = pred[:, margin[0] : (pred.shape[1] - margin[1]), margin[2] : (pred.shape[2] - margin[3])]
         pred = pred.permute(1, 2, 0)
         pred = pred.cpu().numpy()
         if output_size is not None:
-            pred = cv2.resize(pred,
-                              (output_size[1], output_size[0]),
-                              interpolation=cv2.INTER_LINEAR)
+            pred = cv2.resize(pred, (output_size[1], output_size[0]), interpolation=cv2.INTER_LINEAR)
 
         pred = pred.argmax(2)
 
@@ -172,40 +177,32 @@ class Evaluator(object):
         processed_pred = np.zeros((ori_rows, ori_cols, self.class_num))
 
         for s in self.multi_scales:
-            img_scale = cv2.resize(img, None, fx=s, fy=s,
-                                   interpolation=cv2.INTER_LINEAR)
+            img_scale = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_LINEAR)
             new_rows, new_cols, _ = img_scale.shape
-            processed_pred += self.scale_process(img_scale,
-                                                 (ori_rows, ori_cols),
-                                                 crop_size, stride_rate, device)
+            processed_pred += self.scale_process(img_scale, (ori_rows, ori_cols), crop_size, stride_rate, device)
 
         pred = processed_pred.argmax(2)
 
         return pred
 
-    def scale_process(self, img, ori_shape, crop_size, stride_rate,
-                      device=None):
+    def scale_process(self, img, ori_shape, crop_size, stride_rate, device=None):
         new_rows, new_cols, c = img.shape
         long_size = new_cols if new_cols > new_rows else new_rows
 
         if long_size <= crop_size:
             input_data, margin = self.process_image(img, crop_size)
             score = self.val_func_process(input_data, device)
-            score = score[:, margin[0]:(score.shape[1] - margin[1]),
-                    margin[2]:(score.shape[2] - margin[3])]
+            score = score[:, margin[0] : (score.shape[1] - margin[1]), margin[2] : (score.shape[2] - margin[3])]
         else:
             stride = int(np.ceil(crop_size * stride_rate))
-            img_pad, margin = pad_image_to_shape(img, crop_size,
-                                                 cv2.BORDER_CONSTANT, value=0)
+            img_pad, margin = pad_image_to_shape(img, crop_size, cv2.BORDER_CONSTANT, value=0)
 
             pad_rows = img_pad.shape[0]
             pad_cols = img_pad.shape[1]
             r_grid = int(np.ceil((pad_rows - crop_size) / stride)) + 1
             c_grid = int(np.ceil((pad_cols - crop_size) / stride)) + 1
-            data_scale = torch.zeros(self.class_num, pad_rows, pad_cols).cuda(
-                device)
-            count_scale = torch.zeros(self.class_num, pad_rows, pad_cols).cuda(
-                device)
+            data_scale = torch.zeros(self.class_num, pad_rows, pad_cols).cuda(device)
+            count_scale = torch.zeros(self.class_num, pad_rows, pad_cols).cuda(device)
 
             for grid_yidx in range(r_grid):
                 for grid_xidx in range(c_grid):
@@ -215,30 +212,28 @@ class Evaluator(object):
                     e_y = min(s_y + crop_size, pad_rows)
                     s_x = e_x - crop_size
                     s_y = e_y - crop_size
-                    img_sub = img_pad[s_y:e_y, s_x: e_x, :]
-                    count_scale[:, s_y: e_y, s_x: e_x] += 1
+                    img_sub = img_pad[s_y:e_y, s_x:e_x, :]
+                    count_scale[:, s_y:e_y, s_x:e_x] += 1
 
                     input_data, tmargin = self.process_image(img_sub, crop_size)
                     temp_score = self.val_func_process(input_data, device)
-                    temp_score = temp_score[:,
-                                 tmargin[0]:(temp_score.shape[1] - tmargin[1]),
-                                 tmargin[2]:(temp_score.shape[2] - tmargin[3])]
-                    data_scale[:, s_y: e_y, s_x: e_x] += temp_score
+                    temp_score = temp_score[
+                        :,
+                        tmargin[0] : (temp_score.shape[1] - tmargin[1]),
+                        tmargin[2] : (temp_score.shape[2] - tmargin[3]),
+                    ]
+                    data_scale[:, s_y:e_y, s_x:e_x] += temp_score
             # score = data_scale / count_scale
             score = data_scale
-            score = score[:, margin[0]:(score.shape[1] - margin[1]),
-                    margin[2]:(score.shape[2] - margin[3])]
+            score = score[:, margin[0] : (score.shape[1] - margin[1]), margin[2] : (score.shape[2] - margin[3])]
 
         score = score.permute(1, 2, 0)
-        data_output = cv2.resize(score.cpu().numpy(),
-                                 (ori_shape[1], ori_shape[0]),
-                                 interpolation=cv2.INTER_LINEAR)
+        data_output = cv2.resize(score.cpu().numpy(), (ori_shape[1], ori_shape[0]), interpolation=cv2.INTER_LINEAR)
 
         return data_output
 
     def val_func_process(self, input_data, device=None):
-        input_data = np.ascontiguousarray(input_data[None, :, :, :],
-                                          dtype=np.float32)
+        input_data = np.ascontiguousarray(input_data[None, :, :, :], dtype=np.float32)
         # input_data = torch.FloatTensor(input_data).to(device)
         # input_data = torch.tensor(input_data, device=device)
         input_data = torch.from_numpy(input_data).to(device)
@@ -273,8 +268,7 @@ class Evaluator(object):
         p_img = normalize(p_img, self.image_mean, self.image_std)
 
         if crop_size is not None:
-            p_img, margin = pad_image_to_shape(p_img, crop_size,
-                                               cv2.BORDER_CONSTANT, value=0)
+            p_img, margin = pad_image_to_shape(p_img, crop_size, cv2.BORDER_CONSTANT, value=0)
             p_img = p_img.transpose(2, 0, 1)
 
             return p_img, margin

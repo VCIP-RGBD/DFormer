@@ -86,8 +86,7 @@ def evaluate(model, dataloader, config, device, engine, save_dir=None, sliding=F
 
     for idx, minibatch in enumerate(dataloader):
         if ((idx + 1) % int(len(dataloader) * 0.5) == 0 or idx == 0) and (
-            (engine.distributed and (engine.local_rank == 0))
-            or (not engine.distributed)
+            (engine.distributed and (engine.local_rank == 0)) or (not engine.distributed)
         ):
             print(f"Validation Iter: {idx + 1} / {len(dataloader)}")
         images = minibatch["data"]
@@ -137,12 +136,7 @@ def evaluate(model, dataloader, config, device, engine, save_dir=None, sliding=F
             ]
             palette = np.array(palette, dtype=np.uint8)
             cmap = ListedColormap(palette)
-            names = (
-                minibatch["fn"][0]
-                .replace(".jpg", "")
-                .replace(".png", "")
-                .replace("datasets/", "")
-            )
+            names = minibatch["fn"][0].replace(".jpg", "").replace(".png", "").replace("datasets/", "")
             save_name = save_dir + "/" + names + "_pred.png"
             pathlib.Path(save_name).parent.mkdir(parents=True, exist_ok=True)
             preds = preds.argmax(dim=1).cpu().squeeze().numpy().astype(np.uint8)
@@ -209,12 +203,8 @@ def slide_inference(model, imgs, modal_xs, config):
 
     # new add:
     if h_crop > imgs.shape[-2] or w_crop > imgs.shape[-1]:
-        imgs = F.interpolate(
-            imgs, size=(h_crop, w_crop), mode="bilinear", align_corners=True
-        )
-        modal_xs = F.interpolate(
-            modal_xs, size=(h_crop, w_crop), mode="bilinear", align_corners=True
-        )
+        imgs = F.interpolate(imgs, size=(h_crop, w_crop), mode="bilinear", align_corners=True)
+        modal_xs = F.interpolate(modal_xs, size=(h_crop, w_crop), mode="bilinear", align_corners=True)
 
     h_stride, w_stride = [
         int(config.eval_stride_rate * config.eval_crop_size[0]),
@@ -271,8 +261,7 @@ def evaluate_msf(
 
     for idx, minibatch in enumerate(dataloader):
         if ((idx + 1) % int(len(dataloader) * 0.5) == 0 or idx == 0) and (
-            (engine.distributed and (engine.local_rank == 0))
-            or (not engine.distributed)
+            (engine.distributed and (engine.local_rank == 0)) or (not engine.distributed)
         ):
             print(f"Validation Iter: {idx + 1} / {len(dataloader)}")
         images = minibatch["data"]
@@ -291,37 +280,24 @@ def evaluate_msf(
                 int(math.ceil(new_W / 32)) * 32,
             )
             scaled_images = [
-                F.interpolate(
-                    img, size=(new_H, new_W), mode="bilinear", align_corners=True
-                )
-                for img in images
+                F.interpolate(img, size=(new_H, new_W), mode="bilinear", align_corners=True) for img in images
             ]
             scaled_images = [scaled_img.to(device) for scaled_img in scaled_images]
             if sliding:
-                logits = slide_inference(
-                    model, scaled_images[0], scaled_images[1], config
-                )
+                logits = slide_inference(model, scaled_images[0], scaled_images[1], config)
             else:
                 logits = model(scaled_images[0], scaled_images[1])
-            logits = F.interpolate(
-                logits, size=(H, W), mode="bilinear", align_corners=True
-            )
+            logits = F.interpolate(logits, size=(H, W), mode="bilinear", align_corners=True)
             scaled_logits += logits.softmax(dim=1)
 
             if flip:
-                scaled_images = [
-                    torch.flip(scaled_img, dims=(3,)) for scaled_img in scaled_images
-                ]
+                scaled_images = [torch.flip(scaled_img, dims=(3,)) for scaled_img in scaled_images]
                 if sliding:
-                    logits = slide_inference(
-                        model, scaled_images[0], scaled_images[1], config
-                    )
+                    logits = slide_inference(model, scaled_images[0], scaled_images[1], config)
                 else:
                     logits = model(scaled_images[0], scaled_images[1])
                 logits = torch.flip(logits, dims=(3,))
-                logits = F.interpolate(
-                    logits, size=(H, W), mode="bilinear", align_corners=True
-                )
+                logits = F.interpolate(logits, size=(H, W), mode="bilinear", align_corners=True)
                 scaled_logits += logits.softmax(dim=1)
 
         if save_dir is not None:
@@ -348,12 +324,7 @@ def evaluate_msf(
             ]
             palette = np.array(palette, dtype=np.uint8)
             cmap = ListedColormap(palette)
-            names = (
-                minibatch["fn"][0]
-                .replace(".jpg", "")
-                .replace(".png", "")
-                .replace("datasets/", "")
-            )
+            names = minibatch["fn"][0].replace(".jpg", "").replace(".png", "").replace("datasets/", "")
             save_name = save_dir + "/" + names + "_pred.png"
             pathlib.Path(save_name).parent.mkdir(parents=True, exist_ok=True)
             preds = scaled_logits.argmax(dim=1).cpu().squeeze().numpy().astype(np.uint8)
@@ -413,9 +384,7 @@ def main(cfg):
     # print(f"Evaluating {model_path}...")
 
     exp_time = time.strftime("%Y%m%d_%H%M%S", time.localtime())
-    eval_path = os.path.join(
-        os.path.dirname(eval_cfg["MODEL_PATH"]), "eval_{}.txt".format(exp_time)
-    )
+    eval_path = os.path.join(os.path.dirname(eval_cfg["MODEL_PATH"]), "eval_{}.txt".format(exp_time))
 
     for case in cases:
         dataset = eval(cfg["DATASET"]["NAME"])(
@@ -424,9 +393,7 @@ def main(cfg):
         # --- test set
         # dataset = eval(cfg['DATASET']['NAME'])(cfg['DATASET']['ROOT'], 'test', transform, cfg['DATASET']['MODALS'], case)
 
-        model = eval(cfg["MODEL"]["NAME"])(
-            cfg["MODEL"]["BACKBONE"], dataset.n_classes, cfg["DATASET"]["MODALS"]
-        )
+        model = eval(cfg["MODEL"]["NAME"])(cfg["MODEL"]["BACKBONE"], dataset.n_classes, cfg["DATASET"]["MODALS"])
         msg = model.load_state_dict(torch.load(str(model_path), map_location="cpu"))
         # print(msg)
         model = model.to(device)
@@ -461,11 +428,7 @@ def main(cfg):
 
         with open(eval_path, "a+") as f:
             f.writelines(eval_cfg["MODEL_PATH"])
-            f.write(
-                "\n============== Eval on {} {} images =================\n".format(
-                    case, len(dataset)
-                )
-            )
+            f.write("\n============== Eval on {} {} images =================\n".format(case, len(dataset)))
             f.write("\n")
             print(tabulate(table, headers="keys"), file=f)
 

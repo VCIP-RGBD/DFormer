@@ -1,31 +1,31 @@
+import argparse
+import importlib
 import os
+import random
 import sys
 import time
-from torch.utils.data import DataLoader
-import argparse
-from tqdm import tqdm
-from utils.dataloader.dataloader import ValPre
-from utils.pyt_utils import ensure_dir, link_file, load_model, parse_devices
-import importlib
-from utils.visualize import print_iou, show_img
+
+import numpy as np
 import torch
-import torch.nn as nn
-import torch.distributed as dist
 import torch.backends.cudnn as cudnn
-from torch.nn.parallel import DistributedDataParallel
-from utils.dataloader.dataloader import get_train_loader, get_val_loader
+import torch.distributed as dist
+import torch.nn as nn
 from models.builder import EncoderDecoder as segmodel
+from tensorboardX import SummaryWriter
+from torch.nn.parallel import DistributedDataParallel
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+
+from utils.dataloader.dataloader import ValPre, get_train_loader, get_val_loader
 from utils.dataloader.RGBXDataset import RGBXDataset
-from utils.init_func import init_weight, group_weight
-from utils.lr_policy import WarmUpPolyLR
 from utils.engine.engine import Engine
 from utils.engine.logger import get_logger
-from utils.pyt_utils import all_reduce_tensor
-from utils.metric import hist_info, compute_score
-from tensorboardX import SummaryWriter
-import random
-import numpy as np
+from utils.init_func import group_weight, init_weight
+from utils.lr_policy import WarmUpPolyLR
+from utils.metric import compute_score, hist_info
+from utils.pyt_utils import all_reduce_tensor, ensure_dir, link_file, load_model, parse_devices
 from utils.val_mm import evaluate, evaluate_msf
+from utils.visualize import print_iou, show_img
 
 # from eval import evaluate_mid
 
@@ -59,15 +59,11 @@ with Engine(custom_parser=parser) as engine:
         config["x_modal"] = "d"
     cudnn.benchmark = True
 
-    val_loader, val_sampler = get_val_loader(
-        engine, RGBXDataset, config, int(args.gpus)
-    )
+    val_loader, val_sampler = get_val_loader(engine, RGBXDataset, config, int(args.gpus))
     print(len(val_loader))
 
     if (engine.distributed and (engine.local_rank == 0)) or (not engine.distributed):
-        tb_dir = config.tb_dir + "/{}".format(
-            time.strftime("%b%d_%d-%H-%M", time.localtime())
-        )
+        tb_dir = config.tb_dir + "/{}".format(time.strftime("%b%d_%d-%H-%M", time.localtime()))
         generate_tb_dir = config.tb_dir + "/tb"
         tb = SummaryWriter(log_dir=tb_dir)
         engine.link_tb(tb_dir, generate_tb_dir)
@@ -81,7 +77,7 @@ with Engine(custom_parser=parser) as engine:
     weight = torch.load(args.continue_fpath)["model"]
 
     print("load model")
-    model.load_state_dict(weight,strict=False)
+    model.load_state_dict(weight, strict=False)
 
     if engine.distributed:
         logger.info(".............distributed training.............")

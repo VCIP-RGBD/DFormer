@@ -32,9 +32,7 @@ def group_weight(weight_group, module, norm_layer, lr):
             group_decay.append(m.weight)
             if m.bias is not None:
                 group_no_decay.append(m.bias)
-        elif isinstance(
-            m, (nn.Conv1d, nn.Conv2d, nn.Conv3d, nn.ConvTranspose2d, nn.ConvTranspose3d)
-        ):
+        elif isinstance(m, (nn.Conv1d, nn.Conv2d, nn.Conv3d, nn.ConvTranspose2d, nn.ConvTranspose3d)):
             group_decay.append(m.weight)
             if m.bias is not None:
                 group_no_decay.append(m.bias)
@@ -130,13 +128,9 @@ def configure_optimizers(model, lr, weight_decay):
     param_dict = {pn: p for pn, p in model.named_parameters()}
     inter_params = decay & no_decay
     union_params = decay | no_decay
-    assert (
-        len(inter_params) == 0
-    ), "parameters %s made it into both decay/no_decay sets!" % (str(inter_params),)
-    assert (
-        len(param_dict.keys() - union_params) == 0
-    ), "parameters %s were not separated into either decay/no_decay set!" % (
-        str(param_dict.keys() - union_params),
+    assert len(inter_params) == 0, "parameters %s made it into both decay/no_decay sets!" % (str(inter_params),)
+    assert len(param_dict.keys() - union_params) == 0, (
+        "parameters %s were not separated into either decay/no_decay set!" % (str(param_dict.keys() - union_params),)
     )
 
     # create the pytorch optimizer object

@@ -4,7 +4,7 @@ import os.path as osp
 import warnings
 
 
-def find_latest_checkpoint(path, suffix='pth'):
+def find_latest_checkpoint(path, suffix="pth"):
     """This function is for finding the latest checkpoint.
 
     It will be used when automatically resume, modified from
@@ -20,21 +20,21 @@ def find_latest_checkpoint(path, suffix='pth'):
     if not osp.exists(path):
         warnings.warn("The path of the checkpoints doesn't exist.")
         return None
-    if osp.exists(osp.join(path, f'latest.{suffix}')):
-        return osp.join(path, f'latest.{suffix}')
+    if osp.exists(osp.join(path, f"latest.{suffix}")):
+        return osp.join(path, f"latest.{suffix}")
 
-    checkpoints = glob.glob(osp.join(path, f'*.{suffix}'))
+    checkpoints = glob.glob(osp.join(path, f"*.{suffix}"))
     if len(checkpoints) == 0:
-        warnings.warn('The are no checkpoints in the path')
+        warnings.warn("The are no checkpoints in the path")
         return None
     latest = -1
-    latest_path = ''
+    latest_path = ""
     for checkpoint in checkpoints:
         if len(checkpoint) < len(latest_path):
             continue
         # `count` is iteration number, as checkpoints are saved as
         # 'iter_xx.pth' or 'epoch_xx.pth' and xx is iteration number.
-        count = int(osp.basename(checkpoint).split('_')[-1].split('.')[0])
+        count = int(osp.basename(checkpoint).split("_")[-1].split(".")[0])
         if count > latest:
             latest = count
             latest_path = checkpoint

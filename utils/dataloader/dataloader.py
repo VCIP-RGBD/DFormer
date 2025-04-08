@@ -43,15 +43,11 @@ class TrainPre(object):
     def __call__(self, rgb, gt, modal_x):
         rgb, gt, modal_x = random_mirror(rgb, gt, modal_x)
         if self.config.train_scale_array is not None:
-            rgb, gt, modal_x, scale = random_scale(
-                rgb, gt, modal_x, self.config.train_scale_array
-            )
+            rgb, gt, modal_x, scale = random_scale(rgb, gt, modal_x, self.config.train_scale_array)
 
         rgb = normalize(rgb, self.norm_mean, self.norm_std)
         if self.sign:
-            modal_x = normalize(
-                modal_x, [0.48, 0.48, 0.48], [0.28, 0.28, 0.28]
-            )  # [0.5,0.5,0.5]
+            modal_x = normalize(modal_x, [0.48, 0.48, 0.48], [0.28, 0.28, 0.28])  # [0.5,0.5,0.5]
         else:
             modal_x = normalize(modal_x, self.norm_mean, self.norm_std)
 
@@ -90,6 +86,52 @@ class ValPre(object):
         self.sign = sign
 
     def __call__(self, rgb, gt, modal_x):
+        # pad to 730*531
+        if self.config.pad:
+            rgb = cv2.copyMakeBorder(
+                rgb,
+                0,
+                531 - rgb.shape[0],
+                0,
+                730 - rgb.shape[1],
+                cv2.BORDER_CONSTANT,
+                value=(0.0, 0.0, 0.0),
+            )
+            gt = cv2.copyMakeBorder(
+                gt,
+                0,
+                531 - gt.shape[0],
+                0,
+                730 - gt.shape[1],
+                cv2.BORDER_CONSTANT,
+                value=(255,),
+            )
+            modal_x = cv2.copyMakeBorder(
+                modal_x,
+                0,
+                531 - modal_x.shape[0],
+                0,
+                730 - modal_x.shape[1],
+                cv2.BORDER_CONSTANT,
+                value=(0.0, 0.0, 0.0),
+            )
+
+        # rgb = cv2.resize(
+        #     rgb,
+        #     (self.config.image_width, self.config.image_height),
+        #     interpolation=cv2.INTER_LINEAR,
+        # )
+        # gt = cv2.resize(
+        #     gt,
+        #     (self.config.image_width, self.config.image_height),
+        #     interpolation=cv2.INTER_NEAREST,
+        # )
+        # modal_x = cv2.resize(
+        #     modal_x,
+        #     (self.config.image_width, self.config.image_height),
+        #     interpolation=cv2.INTER_LINEAR,
+        # )
+
         rgb = normalize(rgb, self.norm_mean, self.norm_std)
         modal_x = normalize(modal_x, [0.48, 0.48, 0.48], [0.28, 0.28, 0.28])
         return rgb.transpose(2, 0, 1), gt, modal_x.transpose(2, 0, 1)
@@ -110,10 +152,9 @@ def get_train_loader(engine, dataset, config):
         "train_source": config.train_source,
         "eval_source": config.eval_source,
         "class_names": config.class_names,
+        "dataset_name": config.dataset_name,
     }
-    train_preprocess = TrainPre(
-        config.norm_mean, config.norm_std, config.x_is_single_channel, config
-    )
+    train_preprocess = TrainPre(config.norm_mean, config.norm_std, config.x_is_single_channel, config)
 
     train_dataset = dataset(
         data_setting,
@@ -160,10 +201,10 @@ def get_val_loader(engine, dataset, config, val_batch_size=1):
         "train_source": config.train_source,
         "eval_source": config.eval_source,
         "class_names": config.class_names,
+        "dataset_name": config.dataset_name,
+        "backbone": config.backbone,
     }
-    val_preprocess = ValPre(
-        config.norm_mean, config.norm_std, config.x_is_single_channel, config
-    )
+    val_preprocess = ValPre(config.norm_mean, config.norm_std, config.x_is_single_channel, config)
 
     val_dataset = dataset(data_setting, "val", val_preprocess)
 

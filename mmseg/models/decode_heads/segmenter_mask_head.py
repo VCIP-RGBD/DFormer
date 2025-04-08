@@ -3,8 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn import build_norm_layer
-from mmcv.cnn.utils.weight_init import (constant_init, trunc_normal_,
-                                        trunc_normal_init)
+from mmcv.cnn.utils.weight_init import constant_init, trunc_normal_, trunc_normal_init
 from mmcv.runner import ModuleList
 
 from mmseg.models.backbones.vit import TransformerEncoderLayer
@@ -45,24 +44,23 @@ class SegmenterMaskTransformerHead(BaseDecodeHead):
     """
 
     def __init__(
-            self,
-            in_channels,
-            num_layers,
-            num_heads,
-            embed_dims,
-            mlp_ratio=4,
-            drop_path_rate=0.1,
-            drop_rate=0.0,
-            attn_drop_rate=0.0,
-            num_fcs=2,
-            qkv_bias=True,
-            act_cfg=dict(type='GELU'),
-            norm_cfg=dict(type='LN'),
-            init_std=0.02,
-            **kwargs,
+        self,
+        in_channels,
+        num_layers,
+        num_heads,
+        embed_dims,
+        mlp_ratio=4,
+        drop_path_rate=0.1,
+        drop_rate=0.0,
+        attn_drop_rate=0.0,
+        num_fcs=2,
+        qkv_bias=True,
+        act_cfg=dict(type="GELU"),
+        norm_cfg=dict(type="LN"),
+        init_std=0.02,
+        **kwargs,
     ):
-        super(SegmenterMaskTransformerHead, self).__init__(
-            in_channels=in_channels, **kwargs)
+        super(SegmenterMaskTransformerHead, self).__init__(in_channels=in_channels, **kwargs)
 
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, num_layers)]
         self.layers = ModuleList()
@@ -80,23 +78,21 @@ class SegmenterMaskTransformerHead(BaseDecodeHead):
                     act_cfg=act_cfg,
                     norm_cfg=norm_cfg,
                     batch_first=True,
-                ))
+                )
+            )
 
         self.dec_proj = nn.Linear(in_channels, embed_dims)
 
-        self.cls_emb = nn.Parameter(
-            torch.randn(1, self.num_classes, embed_dims))
+        self.cls_emb = nn.Parameter(torch.randn(1, self.num_classes, embed_dims))
         self.patch_proj = nn.Linear(embed_dims, embed_dims, bias=False)
         self.classes_proj = nn.Linear(embed_dims, embed_dims, bias=False)
 
-        self.decoder_norm = build_norm_layer(
-            norm_cfg, embed_dims, postfix=1)[1]
-        self.mask_norm = build_norm_layer(
-            norm_cfg, self.num_classes, postfix=2)[1]
+        self.decoder_norm = build_norm_layer(norm_cfg, embed_dims, postfix=1)[1]
+        self.mask_norm = build_norm_layer(norm_cfg, self.num_classes, postfix=2)[1]
 
         self.init_std = init_std
 
-        delattr(self, 'conv_seg')
+        delattr(self, "conv_seg")
 
     def init_weights(self):
         trunc_normal_(self.cls_emb, std=self.init_std)
@@ -120,8 +116,8 @@ class SegmenterMaskTransformerHead(BaseDecodeHead):
             x = layer(x)
         x = self.decoder_norm(x)
 
-        patches = self.patch_proj(x[:, :-self.num_classes])
-        cls_seg_feat = self.classes_proj(x[:, -self.num_classes:])
+        patches = self.patch_proj(x[:, : -self.num_classes])
+        cls_seg_feat = self.classes_proj(x[:, -self.num_classes :])
 
         patches = F.normalize(patches, dim=2, p=2)
         cls_seg_feat = F.normalize(cls_seg_feat, dim=2, p=2)

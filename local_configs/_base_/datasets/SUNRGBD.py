@@ -13,9 +13,7 @@ C.gt_transform = True
 # True for most dataset valid, Faslse for MFNet(?)
 C.x_root_folder = osp.join(C.dataset_path, "Depth")
 C.x_format = ".png"
-C.x_is_single_channel = (
-    True  # True for raw depth, thermal and aolp/dolp(not aolp/dolp tri) input
-)
+C.x_is_single_channel = True  # True for raw depth, thermal and aolp/dolp(not aolp/dolp tri) input
 C.train_source = osp.join(C.dataset_path, "train.txt")
 C.eval_source = osp.join(C.dataset_path, "test.txt")
 C.is_test = True

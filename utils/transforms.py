@@ -21,25 +21,25 @@ def get_2dshape(shape, *, zero=True):
     else:
         minv = 1
 
-    assert min(shape) >= minv, 'invalid shape: {}'.format(shape)
+    assert min(shape) >= minv, "invalid shape: {}".format(shape)
     return shape
+
 
 def random_crop_pad_to_shape(img, crop_pos, crop_size, pad_label_value):
     h, w = img.shape[:2]
     start_crop_h, start_crop_w = crop_pos
-    assert ((start_crop_h < h) and (start_crop_h >= 0))
-    assert ((start_crop_w < w) and (start_crop_w >= 0))
+    assert (start_crop_h < h) and (start_crop_h >= 0)
+    assert (start_crop_w < w) and (start_crop_w >= 0)
 
     crop_size = get_2dshape(crop_size)
     crop_h, crop_w = crop_size
 
-    img_crop = img[start_crop_h:start_crop_h + crop_h,
-               start_crop_w:start_crop_w + crop_w, ...]
+    img_crop = img[start_crop_h : start_crop_h + crop_h, start_crop_w : start_crop_w + crop_w, ...]
 
-    img_, margin = pad_image_to_shape(img_crop, crop_size, cv2.BORDER_CONSTANT,
-                                      pad_label_value)
+    img_, margin = pad_image_to_shape(img_crop, crop_size, cv2.BORDER_CONSTANT, pad_label_value)
 
     return img_, margin
+
 
 def generate_random_crop_pos(ori_size, crop_size):
     ori_size = get_2dshape(ori_size)
@@ -58,6 +58,7 @@ def generate_random_crop_pos(ori_size, crop_size):
 
     return pos_h, pos_w
 
+
 def pad_image_to_shape(img, shape, border_mode, value):
     margin = np.zeros(4, np.uint32)
     shape = get_2dshape(shape)
@@ -69,10 +70,10 @@ def pad_image_to_shape(img, shape, border_mode, value):
     margin[2] = pad_width // 2
     margin[3] = pad_width // 2 + pad_width % 2
 
-    img = cv2.copyMakeBorder(img, margin[0], margin[1], margin[2], margin[3],
-                             border_mode, value=value)
+    img = cv2.copyMakeBorder(img, margin[0], margin[1], margin[2], margin[3], border_mode, value=value)
 
     return img, margin
+
 
 def pad_image_size_to_multiples_of(img, multiple, pad_value):
     h, w = img.shape[:2]
@@ -86,8 +87,8 @@ def pad_image_size_to_multiples_of(img, multiple, pad_value):
 
     return pad_image_to_shape(img, (th, tw), cv2.BORDER_CONSTANT, pad_value)
 
-def resize_ensure_shortest_edge(img, edge_length,
-                                interpolation_mode=cv2.INTER_LINEAR):
+
+def resize_ensure_shortest_edge(img, edge_length, interpolation_mode=cv2.INTER_LINEAR):
     assert isinstance(edge_length, int) and edge_length > 0, edge_length
     h, w = img.shape[:2]
     if h < w:
@@ -100,14 +101,16 @@ def resize_ensure_shortest_edge(img, edge_length,
 
     return img
 
+
 def random_scale(img, gt, scales):
     scale = random.choice(scales)
     sh = int(img.shape[0] * scale)
     sw = int(img.shape[1] * scale)
     img = cv2.resize(img, (sw, sh), interpolation=cv2.INTER_LINEAR)
     gt = cv2.resize(gt, (sw, sh), interpolation=cv2.INTER_NEAREST)
-    
+
     return img, gt, scale
+
 
 def random_scale_rgbx(img, gt, modal_x, scales):
     scale = random.choice(scales)
@@ -119,6 +122,7 @@ def random_scale_rgbx(img, gt, modal_x, scales):
 
     return img, gt, modal_x, scale
 
+
 def random_scale_with_length(img, gt, length):
     size = random.choice(length)
     sh = size
@@ -128,12 +132,17 @@ def random_scale_with_length(img, gt, length):
 
     return img, gt, size
 
+
 def random_mirror(img, gt):
     if random.random() >= 0.5:
         img = cv2.flip(img, 1)
         gt = cv2.flip(gt, 1)
 
-    return img, gt,
+    return (
+        img,
+        gt,
+    )
+
 
 def random_rotation(img, gt):
     angle = random.random() * 20 - 10
@@ -144,6 +153,7 @@ def random_rotation(img, gt):
 
     return img, gt
 
+
 def random_gaussian_blur(img):
     gauss_size = random.choice([1, 3, 5, 7])
     if gauss_size > 1:
@@ -152,11 +162,13 @@ def random_gaussian_blur(img):
 
     return img
 
+
 def center_crop(img, shape):
     h, w = shape[0], shape[1]
     y = (img.shape[0] - h) // 2
     x = (img.shape[1] - w) // 2
-    return img[y:y + h, x:x + w]
+    return img[y : y + h, x : x + w]
+
 
 def random_crop(img, gt, size):
     if isinstance(size, numbers.Number):
@@ -169,15 +181,16 @@ def random_crop(img, gt, size):
 
     if h > crop_h:
         x = random.randint(0, h - crop_h + 1)
-        img = img[x:x + crop_h, :, :]
-        gt = gt[x:x + crop_h, :]
+        img = img[x : x + crop_h, :, :]
+        gt = gt[x : x + crop_h, :]
 
     if w > crop_w:
         x = random.randint(0, w - crop_w + 1)
-        img = img[:, x:x + crop_w, :]
-        gt = gt[:, x:x + crop_w]
+        img = img[:, x : x + crop_w, :]
+        gt = gt[:, x : x + crop_w]
 
     return img, gt
+
 
 def normalize(img, mean, std):
     # pytorch pretrained model need the input range: 0-1

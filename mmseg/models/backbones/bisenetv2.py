@@ -1,8 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import torch
 import torch.nn as nn
-from mmcv.cnn import (ConvModule, DepthwiseSeparableConvModule,
-                      build_activation_layer, build_norm_layer)
+from mmcv.cnn import ConvModule, DepthwiseSeparableConvModule, build_activation_layer, build_norm_layer
 from mmcv.runner import BaseModule
 
 from mmseg.ops import resize
@@ -30,13 +29,15 @@ class DetailBranch(BaseModule):
         x (torch.Tensor): Feature map of Detail Branch.
     """
 
-    def __init__(self,
-                 detail_channels=(64, 64, 128),
-                 in_channels=3,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        detail_channels=(64, 64, 128),
+        in_channels=3,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(DetailBranch, self).__init__(init_cfg=init_cfg)
         detail_branch = []
         for i in range(len(detail_channels)):
@@ -51,7 +52,8 @@ class DetailBranch(BaseModule):
                             padding=1,
                             conv_cfg=conv_cfg,
                             norm_cfg=norm_cfg,
-                            act_cfg=act_cfg),
+                            act_cfg=act_cfg,
+                        ),
                         ConvModule(
                             in_channels=detail_channels[i],
                             out_channels=detail_channels[i],
@@ -60,7 +62,10 @@ class DetailBranch(BaseModule):
                             padding=1,
                             conv_cfg=conv_cfg,
                             norm_cfg=norm_cfg,
-                            act_cfg=act_cfg)))
+                            act_cfg=act_cfg,
+                        ),
+                    )
+                )
             else:
                 detail_branch.append(
                     nn.Sequential(
@@ -72,7 +77,8 @@ class DetailBranch(BaseModule):
                             padding=1,
                             conv_cfg=conv_cfg,
                             norm_cfg=norm_cfg,
-                            act_cfg=act_cfg),
+                            act_cfg=act_cfg,
+                        ),
                         ConvModule(
                             in_channels=detail_channels[i],
                             out_channels=detail_channels[i],
@@ -81,7 +87,8 @@ class DetailBranch(BaseModule):
                             padding=1,
                             conv_cfg=conv_cfg,
                             norm_cfg=norm_cfg,
-                            act_cfg=act_cfg),
+                            act_cfg=act_cfg,
+                        ),
                         ConvModule(
                             in_channels=detail_channels[i],
                             out_channels=detail_channels[i],
@@ -90,7 +97,10 @@ class DetailBranch(BaseModule):
                             padding=1,
                             conv_cfg=conv_cfg,
                             norm_cfg=norm_cfg,
-                            act_cfg=act_cfg)))
+                            act_cfg=act_cfg,
+                        ),
+                    )
+                )
         self.detail_branch = nn.ModuleList(detail_branch)
 
     def forward(self, x):
@@ -119,13 +129,15 @@ class StemBlock(BaseModule):
         x (torch.Tensor): First feature map in Semantic Branch.
     """
 
-    def __init__(self,
-                 in_channels=3,
-                 out_channels=16,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        in_channels=3,
+        out_channels=16,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(StemBlock, self).__init__(init_cfg=init_cfg)
 
         self.conv_first = ConvModule(
@@ -136,7 +148,8 @@ class StemBlock(BaseModule):
             padding=1,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
         self.convs = nn.Sequential(
             ConvModule(
                 in_channels=out_channels,
@@ -146,7 +159,8 @@ class StemBlock(BaseModule):
                 padding=0,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
-                act_cfg=act_cfg),
+                act_cfg=act_cfg,
+            ),
             ConvModule(
                 in_channels=out_channels // 2,
                 out_channels=out_channels,
@@ -155,9 +169,10 @@ class StemBlock(BaseModule):
                 padding=1,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
-                act_cfg=act_cfg))
-        self.pool = nn.MaxPool2d(
-            kernel_size=3, stride=2, padding=1, ceil_mode=False)
+                act_cfg=act_cfg,
+            ),
+        )
+        self.pool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1, ceil_mode=False)
         self.fuse_last = ConvModule(
             in_channels=out_channels * 2,
             out_channels=out_channels,
@@ -166,7 +181,8 @@ class StemBlock(BaseModule):
             padding=1,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
 
     def forward(self, x):
         x = self.conv_first(x)
@@ -198,15 +214,17 @@ class GELayer(BaseModule):
             Semantic Branch.
     """
 
-    def __init__(self,
-                 in_channels,
-                 out_channels,
-                 exp_ratio=6,
-                 stride=1,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        exp_ratio=6,
+        stride=1,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(GELayer, self).__init__(init_cfg=init_cfg)
         mid_channel = in_channels * exp_ratio
         self.conv1 = ConvModule(
@@ -217,7 +235,8 @@ class GELayer(BaseModule):
             padding=1,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
         if stride == 1:
             self.dwconv = nn.Sequential(
                 # ReLU in ConvModule not shown in paper
@@ -230,7 +249,9 @@ class GELayer(BaseModule):
                     groups=in_channels,
                     conv_cfg=conv_cfg,
                     norm_cfg=norm_cfg,
-                    act_cfg=act_cfg))
+                    act_cfg=act_cfg,
+                )
+            )
             self.shortcut = None
         else:
             self.dwconv = nn.Sequential(
@@ -244,7 +265,8 @@ class GELayer(BaseModule):
                     bias=False,
                     conv_cfg=conv_cfg,
                     norm_cfg=norm_cfg,
-                    act_cfg=None),
+                    act_cfg=None,
+                ),
                 # ReLU in ConvModule not shown in paper
                 ConvModule(
                     in_channels=mid_channel,
@@ -255,7 +277,8 @@ class GELayer(BaseModule):
                     groups=mid_channel,
                     conv_cfg=conv_cfg,
                     norm_cfg=norm_cfg,
-                    act_cfg=act_cfg),
+                    act_cfg=act_cfg,
+                ),
             )
             self.shortcut = nn.Sequential(
                 DepthwiseSeparableConvModule(
@@ -268,7 +291,8 @@ class GELayer(BaseModule):
                     dw_act_cfg=None,
                     pw_norm_cfg=norm_cfg,
                     pw_act_cfg=None,
-                ))
+                )
+            )
 
         self.conv2 = nn.Sequential(
             ConvModule(
@@ -281,7 +305,8 @@ class GELayer(BaseModule):
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
                 act_cfg=None,
-            ))
+            )
+        )
 
         self.act = build_activation_layer(act_cfg)
 
@@ -319,19 +344,19 @@ class CEBlock(BaseModule):
         x (torch.Tensor): Last feature map in Semantic Branch.
     """
 
-    def __init__(self,
-                 in_channels=3,
-                 out_channels=16,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        in_channels=3,
+        out_channels=16,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(CEBlock, self).__init__(init_cfg=init_cfg)
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.gap = nn.Sequential(
-            nn.AdaptiveAvgPool2d((1, 1)),
-            build_norm_layer(norm_cfg, self.in_channels)[1])
+        self.gap = nn.Sequential(nn.AdaptiveAvgPool2d((1, 1)), build_norm_layer(norm_cfg, self.in_channels)[1])
         self.conv_gap = ConvModule(
             in_channels=self.in_channels,
             out_channels=self.out_channels,
@@ -340,7 +365,8 @@ class CEBlock(BaseModule):
             padding=0,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
         # Note: in paper here is naive conv2d, no bn-relu
         self.conv_last = ConvModule(
             in_channels=self.out_channels,
@@ -350,7 +376,8 @@ class CEBlock(BaseModule):
             padding=1,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
 
     def forward(self, x):
         identity = x
@@ -380,46 +407,39 @@ class SemanticBranch(BaseModule):
             Guided Aggregation Layer.
     """
 
-    def __init__(self,
-                 semantic_channels=(16, 32, 64, 128),
-                 in_channels=3,
-                 exp_ratio=6,
-                 init_cfg=None):
+    def __init__(self, semantic_channels=(16, 32, 64, 128), in_channels=3, exp_ratio=6, init_cfg=None):
         super(SemanticBranch, self).__init__(init_cfg=init_cfg)
         self.in_channels = in_channels
         self.semantic_channels = semantic_channels
         self.semantic_stages = []
         for i in range(len(semantic_channels)):
-            stage_name = f'stage{i + 1}'
+            stage_name = f"stage{i + 1}"
             self.semantic_stages.append(stage_name)
             if i == 0:
-                self.add_module(
-                    stage_name,
-                    StemBlock(self.in_channels, semantic_channels[i]))
+                self.add_module(stage_name, StemBlock(self.in_channels, semantic_channels[i]))
             elif i == (len(semantic_channels) - 1):
                 self.add_module(
                     stage_name,
                     nn.Sequential(
-                        GELayer(semantic_channels[i - 1], semantic_channels[i],
-                                exp_ratio, 2),
-                        GELayer(semantic_channels[i], semantic_channels[i],
-                                exp_ratio, 1),
-                        GELayer(semantic_channels[i], semantic_channels[i],
-                                exp_ratio, 1),
-                        GELayer(semantic_channels[i], semantic_channels[i],
-                                exp_ratio, 1)))
+                        GELayer(semantic_channels[i - 1], semantic_channels[i], exp_ratio, 2),
+                        GELayer(semantic_channels[i], semantic_channels[i], exp_ratio, 1),
+                        GELayer(semantic_channels[i], semantic_channels[i], exp_ratio, 1),
+                        GELayer(semantic_channels[i], semantic_channels[i], exp_ratio, 1),
+                    ),
+                )
             else:
                 self.add_module(
                     stage_name,
                     nn.Sequential(
-                        GELayer(semantic_channels[i - 1], semantic_channels[i],
-                                exp_ratio, 2),
-                        GELayer(semantic_channels[i], semantic_channels[i],
-                                exp_ratio, 1)))
+                        GELayer(semantic_channels[i - 1], semantic_channels[i], exp_ratio, 2),
+                        GELayer(semantic_channels[i], semantic_channels[i], exp_ratio, 1),
+                    ),
+                )
 
-        self.add_module(f'stage{len(semantic_channels)}_CEBlock',
-                        CEBlock(semantic_channels[-1], semantic_channels[-1]))
-        self.semantic_stages.append(f'stage{len(semantic_channels)}_CEBlock')
+        self.add_module(
+            f"stage{len(semantic_channels)}_CEBlock", CEBlock(semantic_channels[-1], semantic_channels[-1])
+        )
+        self.semantic_stages.append(f"stage{len(semantic_channels)}_CEBlock")
 
     def forward(self, x):
         semantic_outs = []
@@ -451,13 +471,15 @@ class BGALayer(BaseModule):
         output (torch.Tensor): Output feature map for Segment heads.
     """
 
-    def __init__(self,
-                 out_channels=128,
-                 align_corners=False,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        out_channels=128,
+        align_corners=False,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(BGALayer, self).__init__(init_cfg=init_cfg)
         self.out_channels = out_channels
         self.align_corners = align_corners
@@ -472,7 +494,8 @@ class BGALayer(BaseModule):
                 dw_act_cfg=None,
                 pw_norm_cfg=None,
                 pw_act_cfg=None,
-            ))
+            )
+        )
         self.detail_down = nn.Sequential(
             ConvModule(
                 in_channels=self.out_channels,
@@ -483,8 +506,10 @@ class BGALayer(BaseModule):
                 bias=False,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
-                act_cfg=None),
-            nn.AvgPool2d(kernel_size=3, stride=2, padding=1, ceil_mode=False))
+                act_cfg=None,
+            ),
+            nn.AvgPool2d(kernel_size=3, stride=2, padding=1, ceil_mode=False),
+        )
         self.semantic_conv = nn.Sequential(
             ConvModule(
                 in_channels=self.out_channels,
@@ -495,7 +520,9 @@ class BGALayer(BaseModule):
                 bias=False,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
-                act_cfg=None))
+                act_cfg=None,
+            )
+        )
         self.semantic_dwconv = nn.Sequential(
             DepthwiseSeparableConvModule(
                 in_channels=self.out_channels,
@@ -507,7 +534,8 @@ class BGALayer(BaseModule):
                 dw_act_cfg=None,
                 pw_norm_cfg=None,
                 pw_act_cfg=None,
-            ))
+            )
+        )
         self.conv = ConvModule(
             in_channels=self.out_channels,
             out_channels=self.out_channels,
@@ -526,17 +554,11 @@ class BGALayer(BaseModule):
         semantic_conv = self.semantic_conv(x_s)
         semantic_dwconv = self.semantic_dwconv(x_s)
         semantic_conv = resize(
-            input=semantic_conv,
-            size=detail_dwconv.shape[2:],
-            mode='bilinear',
-            align_corners=self.align_corners)
+            input=semantic_conv, size=detail_dwconv.shape[2:], mode="bilinear", align_corners=self.align_corners
+        )
         fuse_1 = detail_dwconv * torch.sigmoid(semantic_conv)
         fuse_2 = detail_down * torch.sigmoid(semantic_dwconv)
-        fuse_2 = resize(
-            input=fuse_2,
-            size=fuse_1.shape[2:],
-            mode='bilinear',
-            align_corners=self.align_corners)
+        fuse_2 = resize(input=fuse_2, size=fuse_1.shape[2:], mode="bilinear", align_corners=self.align_corners)
         output = self.conv(fuse_1 + fuse_2)
         return output
 
@@ -576,23 +598,24 @@ class BiSeNetV2(BaseModule):
             Default: None.
     """
 
-    def __init__(self,
-                 in_channels=3,
-                 detail_channels=(64, 64, 128),
-                 semantic_channels=(16, 32, 64, 128),
-                 semantic_expansion_ratio=6,
-                 bga_channels=128,
-                 out_indices=(0, 1, 2, 3, 4),
-                 align_corners=False,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        in_channels=3,
+        detail_channels=(64, 64, 128),
+        semantic_channels=(16, 32, 64, 128),
+        semantic_expansion_ratio=6,
+        bga_channels=128,
+        out_indices=(0, 1, 2, 3, 4),
+        align_corners=False,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         if init_cfg is None:
             init_cfg = [
-                dict(type='Kaiming', layer='Conv2d'),
-                dict(
-                    type='Constant', val=1, layer=['_BatchNorm', 'GroupNorm'])
+                dict(type="Kaiming", layer="Conv2d"),
+                dict(type="Constant", val=1, layer=["_BatchNorm", "GroupNorm"]),
             ]
         super(BiSeNetV2, self).__init__(init_cfg=init_cfg)
         self.in_channels = in_channels
@@ -607,9 +630,7 @@ class BiSeNetV2(BaseModule):
         self.act_cfg = act_cfg
 
         self.detail = DetailBranch(self.detail_channels, self.in_channels)
-        self.semantic = SemanticBranch(self.semantic_channels,
-                                       self.in_channels,
-                                       self.semantic_expansion_ratio)
+        self.semantic = SemanticBranch(self.semantic_channels, self.in_channels, self.semantic_expansion_ratio)
         self.bga = BGALayer(self.bga_channels, self.align_corners)
 
     def forward(self, x):

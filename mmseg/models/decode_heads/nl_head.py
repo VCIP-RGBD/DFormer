@@ -21,11 +21,7 @@ class NLHead(FCNHead):
             'dot_product'. Default: 'embedded_gaussian.'.
     """
 
-    def __init__(self,
-                 reduction=2,
-                 use_scale=True,
-                 mode='embedded_gaussian',
-                 **kwargs):
+    def __init__(self, reduction=2, use_scale=True, mode="embedded_gaussian", **kwargs):
         super(NLHead, self).__init__(num_convs=2, **kwargs)
         self.reduction = reduction
         self.use_scale = use_scale
@@ -36,7 +32,8 @@ class NLHead(FCNHead):
             use_scale=self.use_scale,
             conv_cfg=self.conv_cfg,
             norm_cfg=self.norm_cfg,
-            mode=self.mode)
+            mode=self.mode,
+        )
 
     def forward(self, inputs):
         """Forward function."""

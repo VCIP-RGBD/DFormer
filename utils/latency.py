@@ -41,9 +41,7 @@ torch.cuda.synchronize()
 
 
 # 设置用于测量时间的 cuda Event, 这是PyTorch 官方推荐的接口,理论上应该最靠谱
-starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(
-    enable_timing=True
-)
+starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
 # 初始化一个时间容器
 timings = np.zeros((repetitions, 1))
 
@@ -54,9 +52,7 @@ with torch.no_grad():
         _ = model(*dummy_input)
         ender.record()
         torch.cuda.synchronize()  # 等待GPU任务完成
-        curr_time = starter.elapsed_time(
-            ender
-        )  # 从 starter 到 ender 之间用时,单位为毫秒
+        curr_time = starter.elapsed_time(ender)  # 从 starter 到 ender 之间用时,单位为毫秒
         timings[rep] = curr_time
 
 avg = timings.sum() / repetitions

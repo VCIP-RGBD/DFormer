@@ -38,7 +38,7 @@ C.checkpoint_step = 25
 
 """Path Config"""
 C.log_dir = osp.abspath("checkpoints/" + C.dataset_name + "_" + C.backbone)
-C.log_dir = C.log_dir+'_'+time.strftime('%Y%m%d-%H%M%S', time.localtime()).replace(' ','_')
+C.log_dir = C.log_dir + "_" + time.strftime("%Y%m%d-%H%M%S", time.localtime()).replace(" ", "_")
 C.tb_dir = osp.abspath(osp.join(C.log_dir, "tb"))
 C.log_dir_link = C.log_dir
 C.checkpoint_dir = osp.abspath(

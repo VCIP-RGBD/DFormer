@@ -1,11 +1,12 @@
 from abc import ABCMeta, abstractmethod
 
 
-class BaseLR():
+class BaseLR:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def get_lr(self, cur_iter): pass
+    def get_lr(self, cur_iter):
+        pass
 
 
 class PolyLR(BaseLR):
@@ -15,8 +16,7 @@ class PolyLR(BaseLR):
         self.total_iters = total_iters + 0.0
 
     def get_lr(self, cur_iter):
-        return self.start_lr * (
-                (1 - float(cur_iter) / self.total_iters) ** self.lr_power)
+        return self.start_lr * ((1 - float(cur_iter) / self.total_iters) ** self.lr_power)
 
 
 class WarmUpPolyLR(BaseLR):
@@ -30,14 +30,14 @@ class WarmUpPolyLR(BaseLR):
         if cur_iter < self.warmup_steps:
             return self.start_lr * (cur_iter / self.warmup_steps)
         else:
-            return self.start_lr * (
-                    (1 - float(cur_iter) / self.total_iters) ** self.lr_power)
+            return self.start_lr * ((1 - float(cur_iter) / self.total_iters) ** self.lr_power)
 
 
 class MultiStageLR(BaseLR):
     def __init__(self, lr_stages):
-        assert type(lr_stages) in [list, tuple] and len(lr_stages[0]) == 2, \
-            'lr_stages must be list or tuple, with [iters, lr] format'
+        assert type(lr_stages) in [list, tuple] and len(lr_stages[0]) == 2, (
+            "lr_stages must be list or tuple, with [iters, lr] format"
+        )
         self._lr_stagess = lr_stages
 
     def get_lr(self, epoch):

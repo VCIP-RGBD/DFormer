@@ -55,28 +55,26 @@ class BaseDecodeHead(BaseModule, metaclass=ABCMeta):
         init_cfg (dict or list[dict], optional): Initialization config dict.
     """
 
-    def __init__(self,
-                 in_channels,
-                 channels,
-                 *,
-                 num_classes,
-                 out_channels=None,
-                 threshold=None,
-                 dropout_ratio=0.1,
-                 conv_cfg=None,
-                 norm_cfg=None,
-                 act_cfg=dict(type='ReLU'),
-                 in_index=-1,
-                 input_transform=None,
-                 loss_decode=dict(
-                     type='CrossEntropyLoss',
-                     use_sigmoid=False,
-                     loss_weight=1.0),
-                 ignore_index=255,
-                 sampler=None,
-                 align_corners=False,
-                 init_cfg=dict(
-                     type='Normal', std=0.01, override=dict(name='conv_seg'))):
+    def __init__(
+        self,
+        in_channels,
+        channels,
+        *,
+        num_classes,
+        out_channels=None,
+        threshold=None,
+        dropout_ratio=0.1,
+        conv_cfg=None,
+        norm_cfg=None,
+        act_cfg=dict(type="ReLU"),
+        in_index=-1,
+        input_transform=None,
+        loss_decode=dict(type="CrossEntropyLoss", use_sigmoid=False, loss_weight=1.0),
+        ignore_index=255,
+        sampler=None,
+        align_corners=False,
+        init_cfg=dict(type="Normal", std=0.01, override=dict(name="conv_seg")),
+    ):
         super(BaseDecodeHead, self).__init__(init_cfg)
         self._init_inputs(in_channels, in_index, input_transform)
         self.channels = channels
@@ -91,24 +89,26 @@ class BaseDecodeHead(BaseModule, metaclass=ABCMeta):
 
         if out_channels is None:
             if num_classes == 2:
-                warnings.warn('For binary segmentation, we suggest using'
-                              '`out_channels = 1` to define the output'
-                              'channels of segmentor, and use `threshold`'
-                              'to convert seg_logist into a prediction'
-                              'applying a threshold')
+                warnings.warn(
+                    "For binary segmentation, we suggest using"
+                    "`out_channels = 1` to define the output"
+                    "channels of segmentor, and use `threshold`"
+                    "to convert seg_logist into a prediction"
+                    "applying a threshold"
+                )
             out_channels = num_classes
 
         if out_channels != num_classes and out_channels != 1:
             raise ValueError(
-                'out_channels should be equal to num_classes,'
-                'except binary segmentation set out_channels == 1 and'
-                f'num_classes == 2, but got out_channels={out_channels}'
-                f'and num_classes={num_classes}')
+                "out_channels should be equal to num_classes,"
+                "except binary segmentation set out_channels == 1 and"
+                f"num_classes == 2, but got out_channels={out_channels}"
+                f"and num_classes={num_classes}"
+            )
 
         if out_channels == 1 and threshold is None:
             threshold = 0.3
-            warnings.warn('threshold is not defined for binary, and defaults'
-                          'to 0.3')
+            warnings.warn("threshold is not defined for binary, and defaultsto 0.3")
         self.num_classes = num_classes
         self.out_channels = out_channels
         self.threshold = threshold
@@ -120,8 +120,10 @@ class BaseDecodeHead(BaseModule, metaclass=ABCMeta):
             for loss in loss_decode:
                 self.loss_decode.append(build_loss(loss))
         else:
-            raise TypeError(f'loss_decode must be a dict or sequence of dict,\
-                but got {type(loss_decode)}')
+            raise TypeError(
+                f"loss_decode must be a dict or sequence of dict,\
+                but got {type(loss_decode)}"
+            )
 
         if sampler is not None:
             self.sampler = build_pixel_sampler(sampler, context=self)
@@ -137,9 +139,11 @@ class BaseDecodeHead(BaseModule, metaclass=ABCMeta):
 
     def extra_repr(self):
         """Extra repr."""
-        s = f'input_transform={self.input_transform}, ' \
-            f'ignore_index={self.ignore_index}, ' \
-            f'align_corners={self.align_corners}'
+        s = (
+            f"input_transform={self.input_transform}, "
+            f"ignore_index={self.ignore_index}, "
+            f"align_corners={self.align_corners}"
+        )
         return s
 
     def _init_inputs(self, in_channels, in_index, input_transform):
@@ -164,14 +168,14 @@ class BaseDecodeHead(BaseModule, metaclass=ABCMeta):
         """
 
         if input_transform is not None:
-            assert input_transform in ['resize_concat', 'multiple_select']
+            assert input_transform in ["resize_concat", "multiple_select"]
         self.input_transform = input_transform
         self.in_index = in_index
         if input_transform is not None:
             assert isinstance(in_channels, (list, tuple))
             assert isinstance(in_index, (list, tuple))
             assert len(in_channels) == len(in_index)
-            if input_transform == 'resize_concat':
+            if input_transform == "resize_concat":
                 self.in_channels = sum(in_channels)
             else:
                 self.in_channels = in_channels
@@ -190,17 +194,14 @@ class BaseDecodeHead(BaseModule, metaclass=ABCMeta):
             Tensor: The transformed inputs
         """
 
-        if self.input_transform == 'resize_concat':
+        if self.input_transform == "resize_concat":
             inputs = [inputs[i] for i in self.in_index]
             upsampled_inputs = [
-                resize(
-                    input=x,
-                    size=inputs[0].shape[2:],
-                    mode='bilinear',
-                    align_corners=self.align_corners) for x in inputs
+                resize(input=x, size=inputs[0].shape[2:], mode="bilinear", align_corners=self.align_corners)
+                for x in inputs
             ]
             inputs = torch.cat(upsampled_inputs, dim=1)
-        elif self.input_transform == 'multiple_select':
+        elif self.input_transform == "multiple_select":
             inputs = [inputs[i] for i in self.in_index]
         else:
             inputs = inputs[self.in_index]
@@ -259,15 +260,13 @@ class BaseDecodeHead(BaseModule, metaclass=ABCMeta):
         output = self.conv_seg(feat)
         return output
 
-    @force_fp32(apply_to=('seg_logit', ))
+    @force_fp32(apply_to=("seg_logit",))
     def losses(self, seg_logit, seg_label):
         """Compute segmentation loss."""
         loss = dict()
         seg_logit = resize(
-            input=seg_logit,
-            size=seg_label.shape[2:],
-            mode='bilinear',
-            align_corners=self.align_corners)
+            input=seg_logit, size=seg_label.shape[2:], mode="bilinear", align_corners=self.align_corners
+        )
         if self.sampler is not None:
             seg_weight = self.sampler.sample(seg_logit, seg_label)
         else:
@@ -281,17 +280,12 @@ class BaseDecodeHead(BaseModule, metaclass=ABCMeta):
         for loss_decode in losses_decode:
             if loss_decode.loss_name not in loss:
                 loss[loss_decode.loss_name] = loss_decode(
-                    seg_logit,
-                    seg_label,
-                    weight=seg_weight,
-                    ignore_index=self.ignore_index)
+                    seg_logit, seg_label, weight=seg_weight, ignore_index=self.ignore_index
+                )
             else:
                 loss[loss_decode.loss_name] += loss_decode(
-                    seg_logit,
-                    seg_label,
-                    weight=seg_weight,
-                    ignore_index=self.ignore_index)
+                    seg_logit, seg_label, weight=seg_weight, ignore_index=self.ignore_index
+                )
         # print(seg_logit.shape,seg_label.shape)
-        loss['acc_seg'] = accuracy(
-            seg_logit, seg_label, ignore_index=self.ignore_index)
+        loss["acc_seg"] = accuracy(seg_logit, seg_label, ignore_index=self.ignore_index)
         return loss

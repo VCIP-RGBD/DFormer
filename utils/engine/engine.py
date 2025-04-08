@@ -56,7 +56,7 @@ class Engine(object):
 
         if self.distributed:
             # self.local_rank = self.args.local_rank
-            self.local_rank = int(os.environ['LOCAL_RANK'])
+            self.local_rank = int(os.environ["LOCAL_RANK"])
             self.world_size = int(os.environ["WORLD_SIZE"])
             torch.cuda.set_device(self.local_rank)
             os.environ["MASTER_ADDR"] = "127.0.0.1"
@@ -65,7 +65,7 @@ class Engine(object):
             print(self.local_rank)
             self.devices = [0, 1]  # [i for i in range(self.world_size)]
         else:
-            self.local_rank = int(os.environ['LOCAL_RANK'])
+            self.local_rank = int(os.environ["LOCAL_RANK"])
             self.devices = [0, 1]  # parse_devices(self.args.devices)
 
         self.checkpoint_state = []
@@ -123,8 +123,7 @@ class Engine(object):
         del new_state_dict
         t_end = time.time()
         logger.info(
-            "Save checkpoint to file {}, "
-            "Time usage:\n\tprepare checkpoint: {}, IO: {}".format(
+            "Save checkpoint to file {}, Time usage:\n\tprepare checkpoint: {}, IO: {}".format(
                 path, t_iobegin - t_start, t_end - t_iobegin
             )
         )
@@ -134,9 +133,7 @@ class Engine(object):
         ensure_dir(target)
         link_file(source, target)
 
-    def save_and_link_checkpoint(
-        self, checkpoint_dir, log_dir, log_dir_link, infor="", metric=None
-    ):
+    def save_and_link_checkpoint(self, checkpoint_dir, log_dir, log_dir_link, infor="", metric=None):
         assert metric is not None
         ensure_dir(checkpoint_dir)
         if not osp.exists(log_dir_link):
@@ -148,7 +145,7 @@ class Engine(object):
                 os.remove(
                     osp.join(
                         checkpoint_dir,
-                        f'epoch-{self.checkpoint_state[-1]["epoch"]}_miou_{self.checkpoint_state[-1]["metric"]}.pth',
+                        f"epoch-{self.checkpoint_state[-1]['epoch']}_miou_{self.checkpoint_state[-1]['metric']}.pth",
                     )
                 )
                 logger.info(f"remove inferior checkpoint: {self.checkpoint_state[-1]}")
@@ -166,9 +163,7 @@ class Engine(object):
             # tmp = torch.load(self.continue_state_object,
             #                  map_location=lambda storage, loc: storage.cuda(
             #                      self.local_rank))
-            tmp = torch.load(
-                self.continue_state_object, map_location=torch.device("cpu")
-            )
+            tmp = torch.load(self.continue_state_object, map_location=torch.device("cpu"))
         else:
             tmp = torch.load(self.continue_state_object)
         t_ioend = time.time()
@@ -179,8 +174,7 @@ class Engine(object):
         del tmp
         t_end = time.time()
         logger.info(
-            "Load checkpoint from file {}, "
-            "Time usage:\n\tIO: {}, restore checkpoint: {}".format(
+            "Load checkpoint from file {}, Time usage:\n\tIO: {}, restore checkpoint: {}".format(
                 self.continue_state_object, t_ioend - t_start, t_end - t_ioend
             )
         )
@@ -191,8 +185,5 @@ class Engine(object):
     def __exit__(self, type, value, tb):
         torch.cuda.empty_cache()
         if type is not None:
-            logger.warning(
-                "A exception occurred during Engine initialization, "
-                "give up running process"
-            )
+            logger.warning("A exception occurred during Engine initialization, give up running process")
             return False

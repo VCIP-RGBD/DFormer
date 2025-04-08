@@ -38,7 +38,8 @@ class SelfAttentionBlock(_SelfAttentionBlock):
             with_out=False,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
 
         self.output_project = self.build_project(
             in_channels,
@@ -47,7 +48,8 @@ class SelfAttentionBlock(_SelfAttentionBlock):
             use_conv_module=True,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
 
     def forward(self, x):
         """Forward function."""
@@ -78,26 +80,17 @@ class ISAHead(BaseDecodeHead):
             padding=1,
             conv_cfg=self.conv_cfg,
             norm_cfg=self.norm_cfg,
-            act_cfg=self.act_cfg)
+            act_cfg=self.act_cfg,
+        )
         self.global_relation = SelfAttentionBlock(
-            self.channels,
-            isa_channels,
-            conv_cfg=self.conv_cfg,
-            norm_cfg=self.norm_cfg,
-            act_cfg=self.act_cfg)
+            self.channels, isa_channels, conv_cfg=self.conv_cfg, norm_cfg=self.norm_cfg, act_cfg=self.act_cfg
+        )
         self.local_relation = SelfAttentionBlock(
-            self.channels,
-            isa_channels,
-            conv_cfg=self.conv_cfg,
-            norm_cfg=self.norm_cfg,
-            act_cfg=self.act_cfg)
+            self.channels, isa_channels, conv_cfg=self.conv_cfg, norm_cfg=self.norm_cfg, act_cfg=self.act_cfg
+        )
         self.out_conv = ConvModule(
-            self.channels * 2,
-            self.channels,
-            1,
-            conv_cfg=self.conv_cfg,
-            norm_cfg=self.norm_cfg,
-            act_cfg=self.act_cfg)
+            self.channels * 2, self.channels, 1, conv_cfg=self.conv_cfg, norm_cfg=self.norm_cfg, act_cfg=self.act_cfg
+        )
 
     def forward(self, inputs):
         """Forward function."""
@@ -110,8 +103,7 @@ class ISAHead(BaseDecodeHead):
         glb_h, glb_w = math.ceil(h / loc_h), math.ceil(w / loc_w)
         pad_h, pad_w = glb_h * loc_h - h, glb_w * loc_w - w
         if pad_h > 0 or pad_w > 0:  # pad if the size is not divisible
-            padding = (pad_w // 2, pad_w - pad_w // 2, pad_h // 2,
-                       pad_h - pad_h // 2)
+            padding = (pad_w // 2, pad_w - pad_w // 2, pad_h // 2, pad_h - pad_h // 2)
             x = F.pad(x, padding)
 
         # global relation
@@ -135,7 +127,7 @@ class ISAHead(BaseDecodeHead):
         x = x.permute(0, 3, 1, 4, 2, 5)  # (n, c, glb_h, loc_h, glb_w, loc_w)
         x = x.reshape(n, c, glb_h * loc_h, glb_w * loc_w)
         if pad_h > 0 or pad_w > 0:  # remove padding
-            x = x[:, :, pad_h // 2:pad_h // 2 + h, pad_w // 2:pad_w // 2 + w]
+            x = x[:, :, pad_h // 2 : pad_h // 2 + h, pad_w // 2 : pad_w // 2 + w]
 
         x = self.out_conv(torch.cat([x, residual], dim=1))
         out = self.cls_seg(x)

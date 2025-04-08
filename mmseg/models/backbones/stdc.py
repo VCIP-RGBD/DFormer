@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 """Modified from https://github.com/MichaelFan01/STDC-Seg."""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -26,25 +27,26 @@ class STDCModule(BaseModule):
             Default: None.
     """
 
-    def __init__(self,
-                 in_channels,
-                 out_channels,
-                 stride,
-                 norm_cfg=None,
-                 act_cfg=None,
-                 num_convs=4,
-                 fusion_type='add',
-                 init_cfg=None):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        stride,
+        norm_cfg=None,
+        act_cfg=None,
+        num_convs=4,
+        fusion_type="add",
+        init_cfg=None,
+    ):
         super(STDCModule, self).__init__(init_cfg=init_cfg)
         assert num_convs > 1
-        assert fusion_type in ['add', 'cat']
+        assert fusion_type in ["add", "cat"]
         self.stride = stride
         self.with_downsample = True if self.stride == 2 else False
         self.fusion_type = fusion_type
 
         self.layers = ModuleList()
-        conv_0 = ConvModule(
-            in_channels, out_channels // 2, kernel_size=1, norm_cfg=norm_cfg)
+        conv_0 = ConvModule(in_channels, out_channels // 2, kernel_size=1, norm_cfg=norm_cfg)
 
         if self.with_downsample:
             self.downsample = ConvModule(
@@ -55,9 +57,10 @@ class STDCModule(BaseModule):
                 padding=1,
                 groups=out_channels // 2,
                 norm_cfg=norm_cfg,
-                act_cfg=None)
+                act_cfg=None,
+            )
 
-            if self.fusion_type == 'add':
+            if self.fusion_type == "add":
                 self.layers.append(nn.Sequential(conv_0, self.downsample))
                 self.skip = Sequential(
                     ConvModule(
@@ -68,13 +71,10 @@ class STDCModule(BaseModule):
                         padding=1,
                         groups=in_channels,
                         norm_cfg=norm_cfg,
-                        act_cfg=None),
-                    ConvModule(
-                        in_channels,
-                        out_channels,
-                        1,
-                        norm_cfg=norm_cfg,
-                        act_cfg=None))
+                        act_cfg=None,
+                    ),
+                    ConvModule(in_channels, out_channels, 1, norm_cfg=norm_cfg, act_cfg=None),
+                )
             else:
                 self.layers.append(conv_0)
                 self.skip = nn.AvgPool2d(kernel_size=3, stride=2, padding=1)
@@ -82,7 +82,7 @@ class STDCModule(BaseModule):
             self.layers.append(conv_0)
 
         for i in range(1, num_convs):
-            out_factor = 2**(i + 1) if i != num_convs - 1 else 2**i
+            out_factor = 2 ** (i + 1) if i != num_convs - 1 else 2**i
             self.layers.append(
                 ConvModule(
                     out_channels // 2**i,
@@ -91,10 +91,12 @@ class STDCModule(BaseModule):
                     stride=1,
                     padding=1,
                     norm_cfg=norm_cfg,
-                    act_cfg=act_cfg))
+                    act_cfg=act_cfg,
+                )
+            )
 
     def forward(self, inputs):
-        if self.fusion_type == 'add':
+        if self.fusion_type == "add":
             out = self.forward_add(inputs)
         else:
             out = self.forward_cat(inputs)
@@ -148,33 +150,24 @@ class FeatureFusionModule(BaseModule):
             Default: None.
     """
 
-    def __init__(self,
-                 in_channels,
-                 out_channels,
-                 scale_factor=4,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        scale_factor=4,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(FeatureFusionModule, self).__init__(init_cfg=init_cfg)
         channels = out_channels // scale_factor
-        self.conv0 = ConvModule(
-            in_channels, out_channels, 1, norm_cfg=norm_cfg, act_cfg=act_cfg)
+        self.conv0 = ConvModule(in_channels, out_channels, 1, norm_cfg=norm_cfg, act_cfg=act_cfg)
         self.attention = nn.Sequential(
             nn.AdaptiveAvgPool2d((1, 1)),
-            ConvModule(
-                out_channels,
-                channels,
-                1,
-                norm_cfg=None,
-                bias=False,
-                act_cfg=act_cfg),
-            ConvModule(
-                channels,
-                out_channels,
-                1,
-                norm_cfg=None,
-                bias=False,
-                act_cfg=None), nn.Sigmoid())
+            ConvModule(out_channels, channels, 1, norm_cfg=None, bias=False, act_cfg=act_cfg),
+            ConvModule(channels, out_channels, 1, norm_cfg=None, bias=False, act_cfg=None),
+            nn.Sigmoid(),
+        )
 
     def forward(self, spatial_inputs, context_inputs):
         inputs = torch.cat([spatial_inputs, context_inputs], dim=1)
@@ -224,30 +217,26 @@ class STDCNet(BaseModule):
         outputs[2].shape = torch.Size([1, 1024, 32, 64])
     """
 
-    arch_settings = {
-        'STDCNet1': [(2, 1), (2, 1), (2, 1)],
-        'STDCNet2': [(2, 1, 1, 1), (2, 1, 1, 1, 1), (2, 1, 1)]
-    }
+    arch_settings = {"STDCNet1": [(2, 1), (2, 1), (2, 1)], "STDCNet2": [(2, 1, 1, 1), (2, 1, 1, 1, 1), (2, 1, 1)]}
 
-    def __init__(self,
-                 stdc_type,
-                 in_channels,
-                 channels,
-                 bottleneck_type,
-                 norm_cfg,
-                 act_cfg,
-                 num_convs=4,
-                 with_final_conv=False,
-                 pretrained=None,
-                 init_cfg=None):
+    def __init__(
+        self,
+        stdc_type,
+        in_channels,
+        channels,
+        bottleneck_type,
+        norm_cfg,
+        act_cfg,
+        num_convs=4,
+        with_final_conv=False,
+        pretrained=None,
+        init_cfg=None,
+    ):
         super(STDCNet, self).__init__(init_cfg=init_cfg)
-        assert stdc_type in self.arch_settings, \
-            f'invalid structure {stdc_type} for STDCNet.'
-        assert bottleneck_type in ['add', 'cat'],\
-            f'bottleneck_type must be `add` or `cat`, got {bottleneck_type}'
+        assert stdc_type in self.arch_settings, f"invalid structure {stdc_type} for STDCNet."
+        assert bottleneck_type in ["add", "cat"], f"bottleneck_type must be `add` or `cat`, got {bottleneck_type}"
 
-        assert len(channels) == 5,\
-            f'invalid channels length {len(channels)} for STDCNet.'
+        assert len(channels) == 5, f"invalid channels length {len(channels)} for STDCNet."
 
         self.in_channels = in_channels
         self.channels = channels
@@ -256,24 +245,28 @@ class STDCNet(BaseModule):
         self.num_convs = num_convs
         self.with_final_conv = with_final_conv
 
-        self.stages = ModuleList([
-            ConvModule(
-                self.in_channels,
-                self.channels[0],
-                kernel_size=3,
-                stride=2,
-                padding=1,
-                norm_cfg=norm_cfg,
-                act_cfg=act_cfg),
-            ConvModule(
-                self.channels[0],
-                self.channels[1],
-                kernel_size=3,
-                stride=2,
-                padding=1,
-                norm_cfg=norm_cfg,
-                act_cfg=act_cfg)
-        ])
+        self.stages = ModuleList(
+            [
+                ConvModule(
+                    self.in_channels,
+                    self.channels[0],
+                    kernel_size=3,
+                    stride=2,
+                    padding=1,
+                    norm_cfg=norm_cfg,
+                    act_cfg=act_cfg,
+                ),
+                ConvModule(
+                    self.channels[0],
+                    self.channels[1],
+                    kernel_size=3,
+                    stride=2,
+                    padding=1,
+                    norm_cfg=norm_cfg,
+                    act_cfg=act_cfg,
+                ),
+            ]
+        )
         # `self.num_shallow_features` is the number of shallow modules in
         # `STDCNet`, which is noted as `Stage1` and `Stage2` in original paper.
         # They are both not used for following modules like Attention
@@ -285,22 +278,20 @@ class STDCNet(BaseModule):
         for strides in self.stage_strides:
             idx = len(self.stages) - 1
             self.stages.append(
-                self._make_stage(self.channels[idx], self.channels[idx + 1],
-                                 strides, norm_cfg, act_cfg, bottleneck_type))
+                self._make_stage(
+                    self.channels[idx], self.channels[idx + 1], strides, norm_cfg, act_cfg, bottleneck_type
+                )
+            )
         # After appending, `self.stages` is a ModuleList including several
         # shallow modules and STDCModules.
         # (len(self.stages) ==
         # self.num_shallow_features + len(self.stage_strides))
         if self.with_final_conv:
             self.final_conv = ConvModule(
-                self.channels[-1],
-                max(1024, self.channels[-1]),
-                1,
-                norm_cfg=norm_cfg,
-                act_cfg=act_cfg)
+                self.channels[-1], max(1024, self.channels[-1]), 1, norm_cfg=norm_cfg, act_cfg=act_cfg
+            )
 
-    def _make_stage(self, in_channels, out_channels, strides, norm_cfg,
-                    act_cfg, bottleneck_type):
+    def _make_stage(self, in_channels, out_channels, strides, norm_cfg, act_cfg, bottleneck_type):
         layers = []
         for i, stride in enumerate(strides):
             layers.append(
@@ -311,7 +302,9 @@ class STDCNet(BaseModule):
                     norm_cfg,
                     act_cfg,
                     num_convs=self.num_convs,
-                    fusion_type=bottleneck_type))
+                    fusion_type=bottleneck_type,
+                )
+            )
         return Sequential(*layers)
 
     def forward(self, x):
@@ -321,7 +314,7 @@ class STDCNet(BaseModule):
             outs.append(x)
         if self.with_final_conv:
             outs[-1] = self.final_conv(outs[-1])
-        outs = outs[self.num_shallow_features:]
+        outs = outs[self.num_shallow_features :]
         return tuple(outs)
 
 
@@ -360,31 +353,25 @@ class STDCContextPathNet(BaseModule):
             auxiliary heads and decoder head.
     """
 
-    def __init__(self,
-                 backbone_cfg,
-                 last_in_channels=(1024, 512),
-                 out_channels=128,
-                 ffm_cfg=dict(
-                     in_channels=512, out_channels=256, scale_factor=4),
-                 upsample_mode='nearest',
-                 align_corners=None,
-                 norm_cfg=dict(type='BN'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        backbone_cfg,
+        last_in_channels=(1024, 512),
+        out_channels=128,
+        ffm_cfg=dict(in_channels=512, out_channels=256, scale_factor=4),
+        upsample_mode="nearest",
+        align_corners=None,
+        norm_cfg=dict(type="BN"),
+        init_cfg=None,
+    ):
         super(STDCContextPathNet, self).__init__(init_cfg=init_cfg)
         self.backbone = build_backbone(backbone_cfg)
         self.arms = ModuleList()
         self.convs = ModuleList()
         for channels in last_in_channels:
             self.arms.append(AttentionRefinementModule(channels, out_channels))
-            self.convs.append(
-                ConvModule(
-                    out_channels,
-                    out_channels,
-                    3,
-                    padding=1,
-                    norm_cfg=norm_cfg))
-        self.conv_avg = ConvModule(
-            last_in_channels[0], out_channels, 1, norm_cfg=norm_cfg)
+            self.convs.append(ConvModule(out_channels, out_channels, 3, padding=1, norm_cfg=norm_cfg))
+        self.conv_avg = ConvModule(last_in_channels[0], out_channels, 1, norm_cfg=norm_cfg)
 
         self.ffm = FeatureFusionModule(**ffm_cfg)
 
@@ -397,10 +384,8 @@ class STDCContextPathNet(BaseModule):
         avg_feat = self.conv_avg(avg)
 
         feature_up = resize(
-            avg_feat,
-            size=outs[-1].shape[2:],
-            mode=self.upsample_mode,
-            align_corners=self.align_corners)
+            avg_feat, size=outs[-1].shape[2:], mode=self.upsample_mode, align_corners=self.align_corners
+        )
         arms_out = []
         for i in range(len(self.arms)):
             x_arm = self.arms[i](outs[len(outs) - 1 - i]) + feature_up
@@ -408,7 +393,8 @@ class STDCContextPathNet(BaseModule):
                 x_arm,
                 size=outs[len(outs) - 1 - i - 1].shape[2:],
                 mode=self.upsample_mode,
-                align_corners=self.align_corners)
+                align_corners=self.align_corners,
+            )
             feature_up = self.convs[i](feature_up)
             arms_out.append(feature_up)
 

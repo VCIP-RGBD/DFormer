@@ -22,20 +22,24 @@ class SpatialPath(BaseModule):
         x (torch.Tensor): Feature map for Feature Fusion Module.
     """
 
-    def __init__(self,
-                 in_channels=3,
-                 num_channels=(64, 64, 64, 128),
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        in_channels=3,
+        num_channels=(64, 64, 64, 128),
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(SpatialPath, self).__init__(init_cfg=init_cfg)
-        assert len(num_channels) == 4, 'Length of input channels \
-                                        of Spatial Path must be 4!'
+        assert len(num_channels) == 4, (
+            "Length of input channels \
+                                        of Spatial Path must be 4!"
+        )
 
         self.layers = []
         for i in range(len(num_channels)):
-            layer_name = f'layer{i + 1}'
+            layer_name = f"layer{i + 1}"
             self.layers.append(layer_name)
             if i == 0:
                 self.add_module(
@@ -48,7 +52,9 @@ class SpatialPath(BaseModule):
                         padding=3,
                         conv_cfg=conv_cfg,
                         norm_cfg=norm_cfg,
-                        act_cfg=act_cfg))
+                        act_cfg=act_cfg,
+                    ),
+                )
             elif i == len(num_channels) - 1:
                 self.add_module(
                     layer_name,
@@ -60,7 +66,9 @@ class SpatialPath(BaseModule):
                         padding=0,
                         conv_cfg=conv_cfg,
                         norm_cfg=norm_cfg,
-                        act_cfg=act_cfg))
+                        act_cfg=act_cfg,
+                    ),
+                )
             else:
                 self.add_module(
                     layer_name,
@@ -72,7 +80,9 @@ class SpatialPath(BaseModule):
                         padding=1,
                         conv_cfg=conv_cfg,
                         norm_cfg=norm_cfg,
-                        act_cfg=act_cfg))
+                        act_cfg=act_cfg,
+                    ),
+                )
 
     def forward(self, x):
         for i, layer_name in enumerate(self.layers):
@@ -91,13 +101,15 @@ class AttentionRefinementModule(BaseModule):
         x_out (torch.Tensor): Feature map of Attention Refinement Module.
     """
 
-    def __init__(self,
-                 in_channels,
-                 out_channel,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        in_channels,
+        out_channel,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(AttentionRefinementModule, self).__init__(init_cfg=init_cfg)
         self.conv_layer = ConvModule(
             in_channels=in_channels,
@@ -107,7 +119,8 @@ class AttentionRefinementModule(BaseModule):
             padding=1,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
         self.atten_conv_layer = nn.Sequential(
             nn.AdaptiveAvgPool2d((1, 1)),
             ConvModule(
@@ -117,7 +130,10 @@ class AttentionRefinementModule(BaseModule):
                 bias=False,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
-                act_cfg=None), nn.Sigmoid())
+                act_cfg=None,
+            ),
+            nn.Sigmoid(),
+        )
 
     def forward(self, x):
         x = self.conv_layer(x)
@@ -144,25 +160,27 @@ class ContextPath(BaseModule):
             Fusion Module and Auxiliary Head.
     """
 
-    def __init__(self,
-                 backbone_cfg,
-                 context_channels=(128, 256, 512),
-                 align_corners=False,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        backbone_cfg,
+        context_channels=(128, 256, 512),
+        align_corners=False,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(ContextPath, self).__init__(init_cfg=init_cfg)
-        assert len(context_channels) == 3, 'Length of input channels \
-                                           of Context Path must be 3!'
+        assert len(context_channels) == 3, (
+            "Length of input channels \
+                                           of Context Path must be 3!"
+        )
 
         self.backbone = build_backbone(backbone_cfg)
 
         self.align_corners = align_corners
-        self.arm16 = AttentionRefinementModule(context_channels[1],
-                                               context_channels[0])
-        self.arm32 = AttentionRefinementModule(context_channels[2],
-                                               context_channels[0])
+        self.arm16 = AttentionRefinementModule(context_channels[1], context_channels[0])
+        self.arm32 = AttentionRefinementModule(context_channels[2], context_channels[0])
         self.conv_head32 = ConvModule(
             in_channels=context_channels[0],
             out_channels=context_channels[0],
@@ -171,7 +189,8 @@ class ContextPath(BaseModule):
             padding=1,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
         self.conv_head16 = ConvModule(
             in_channels=context_channels[0],
             out_channels=context_channels[0],
@@ -180,7 +199,8 @@ class ContextPath(BaseModule):
             padding=1,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
         self.gap_conv = nn.Sequential(
             nn.AdaptiveAvgPool2d((1, 1)),
             ConvModule(
@@ -191,7 +211,9 @@ class ContextPath(BaseModule):
                 padding=0,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
-                act_cfg=act_cfg))
+                act_cfg=act_cfg,
+            ),
+        )
 
     def forward(self, x):
         x_4, x_8, x_16, x_32 = self.backbone(x)
@@ -199,12 +221,12 @@ class ContextPath(BaseModule):
 
         x_32_arm = self.arm32(x_32)
         x_32_sum = x_32_arm + x_gap
-        x_32_up = resize(input=x_32_sum, size=x_16.shape[2:], mode='nearest')
+        x_32_up = resize(input=x_32_sum, size=x_16.shape[2:], mode="nearest")
         x_32_up = self.conv_head32(x_32_up)
 
         x_16_arm = self.arm16(x_16)
         x_16_sum = x_16_arm + x_32_up
-        x_16_up = resize(input=x_16_sum, size=x_8.shape[2:], mode='nearest')
+        x_16_up = resize(input=x_16_sum, size=x_8.shape[2:], mode="nearest")
         x_16_up = self.conv_head16(x_16_up)
 
         return x_16_up, x_32_up
@@ -221,13 +243,15 @@ class FeatureFusionModule(BaseModule):
         x_out (torch.Tensor): Feature map of Feature Fusion Module.
     """
 
-    def __init__(self,
-                 in_channels,
-                 out_channels,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(FeatureFusionModule, self).__init__(init_cfg=init_cfg)
         self.conv1 = ConvModule(
             in_channels=in_channels,
@@ -237,7 +261,8 @@ class FeatureFusionModule(BaseModule):
             padding=0,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=act_cfg,
+        )
         self.gap = nn.AdaptiveAvgPool2d((1, 1))
         self.conv_atten = nn.Sequential(
             ConvModule(
@@ -249,7 +274,10 @@ class FeatureFusionModule(BaseModule):
                 bias=False,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
-                act_cfg=act_cfg), nn.Sigmoid())
+                act_cfg=act_cfg,
+            ),
+            nn.Sigmoid(),
+        )
 
     def forward(self, x_sp, x_cp):
         x_concat = torch.cat([x_sp, x_cp], dim=1)
@@ -291,30 +319,34 @@ class BiSeNetV1(BaseModule):
             Default: 256.
     """
 
-    def __init__(self,
-                 backbone_cfg,
-                 in_channels=3,
-                 spatial_channels=(64, 64, 64, 128),
-                 context_channels=(128, 256, 512),
-                 out_indices=(0, 1, 2),
-                 align_corners=False,
-                 out_channels=256,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN', requires_grad=True),
-                 act_cfg=dict(type='ReLU'),
-                 init_cfg=None):
-
+    def __init__(
+        self,
+        backbone_cfg,
+        in_channels=3,
+        spatial_channels=(64, 64, 64, 128),
+        context_channels=(128, 256, 512),
+        out_indices=(0, 1, 2),
+        align_corners=False,
+        out_channels=256,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN", requires_grad=True),
+        act_cfg=dict(type="ReLU"),
+        init_cfg=None,
+    ):
         super(BiSeNetV1, self).__init__(init_cfg=init_cfg)
-        assert len(spatial_channels) == 4, 'Length of input channels \
-                                           of Spatial Path must be 4!'
+        assert len(spatial_channels) == 4, (
+            "Length of input channels \
+                                           of Spatial Path must be 4!"
+        )
 
-        assert len(context_channels) == 3, 'Length of input channels \
-                                           of Context Path must be 3!'
+        assert len(context_channels) == 3, (
+            "Length of input channels \
+                                           of Context Path must be 3!"
+        )
 
         self.out_indices = out_indices
         self.align_corners = align_corners
-        self.context_path = ContextPath(backbone_cfg, context_channels,
-                                        self.align_corners)
+        self.context_path = ContextPath(backbone_cfg, context_channels, self.align_corners)
         self.spatial_path = SpatialPath(in_channels, spatial_channels)
         self.ffm = FeatureFusionModule(context_channels[1], out_channels)
         self.conv_cfg = conv_cfg

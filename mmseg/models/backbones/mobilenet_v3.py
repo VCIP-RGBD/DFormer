@@ -39,6 +39,7 @@ class MobileNetV3(BaseModule):
         init_cfg (dict or list[dict], optional): Initialization config dict.
             Default: None
     """
+
     # Parameters to build each block:
     #     [kernel size, mid channels, out channels, with_se, act type, stride]
     arch_settings = {
@@ -70,37 +71,34 @@ class MobileNetV3(BaseModule):
                   [5, 960, 160, True, 'HSwish', 1]]
     }  # yapf: disable
 
-    def __init__(self,
-                 arch='small',
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 out_indices=(0, 1, 12),
-                 frozen_stages=-1,
-                 reduction_factor=1,
-                 norm_eval=False,
-                 with_cp=False,
-                 pretrained=None,
-                 init_cfg=None):
+    def __init__(
+        self,
+        arch="small",
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        out_indices=(0, 1, 12),
+        frozen_stages=-1,
+        reduction_factor=1,
+        norm_eval=False,
+        with_cp=False,
+        pretrained=None,
+        init_cfg=None,
+    ):
         super(MobileNetV3, self).__init__(init_cfg)
 
         self.pretrained = pretrained
-        assert not (init_cfg and pretrained), \
-            'init_cfg and pretrained cannot be setting at the same time'
+        assert not (init_cfg and pretrained), "init_cfg and pretrained cannot be setting at the same time"
         if isinstance(pretrained, str):
-            warnings.warn('DeprecationWarning: pretrained is a deprecated, '
-                          'please use "init_cfg" instead')
-            self.init_cfg = dict(type='Pretrained', checkpoint=pretrained)
+            warnings.warn('DeprecationWarning: pretrained is a deprecated, please use "init_cfg" instead')
+            self.init_cfg = dict(type="Pretrained", checkpoint=pretrained)
         elif pretrained is None:
             if init_cfg is None:
                 self.init_cfg = [
-                    dict(type='Kaiming', layer='Conv2d'),
-                    dict(
-                        type='Constant',
-                        val=1,
-                        layer=['_BatchNorm', 'GroupNorm'])
+                    dict(type="Kaiming", layer="Conv2d"),
+                    dict(type="Constant", val=1, layer=["_BatchNorm", "GroupNorm"]),
                 ]
         else:
-            raise TypeError('pretrained must be a str or None')
+            raise TypeError("pretrained must be a str or None")
 
         assert arch in self.arch_settings
         assert isinstance(reduction_factor, int) and reduction_factor > 0
@@ -108,14 +106,17 @@ class MobileNetV3(BaseModule):
         for index in out_indices:
             if index not in range(0, len(self.arch_settings[arch]) + 2):
                 raise ValueError(
-                    'the item in out_indices must in '
-                    f'range(0, {len(self.arch_settings[arch])+2}). '
-                    f'But received {index}')
+                    "the item in out_indices must in "
+                    f"range(0, {len(self.arch_settings[arch]) + 2}). "
+                    f"But received {index}"
+                )
 
         if frozen_stages not in range(-1, len(self.arch_settings[arch]) + 2):
-            raise ValueError('frozen_stages must be in range(-1, '
-                             f'{len(self.arch_settings[arch])+2}). '
-                             f'But received {frozen_stages}')
+            raise ValueError(
+                "frozen_stages must be in range(-1, "
+                f"{len(self.arch_settings[arch]) + 2}). "
+                f"But received {frozen_stages}"
+            )
         self.arch = arch
         self.conv_cfg = conv_cfg
         self.norm_cfg = norm_cfg
@@ -137,19 +138,18 @@ class MobileNetV3(BaseModule):
             kernel_size=3,
             stride=2,
             padding=1,
-            conv_cfg=dict(type='Conv2dAdaptivePadding'),
+            conv_cfg=dict(type="Conv2dAdaptivePadding"),
             norm_cfg=self.norm_cfg,
-            act_cfg=dict(type='HSwish'))
-        self.add_module('layer0', layer)
-        layers.append('layer0')
+            act_cfg=dict(type="HSwish"),
+        )
+        self.add_module("layer0", layer)
+        layers.append("layer0")
 
         layer_setting = self.arch_settings[self.arch]
         for i, params in enumerate(layer_setting):
-            (kernel_size, mid_channels, out_channels, with_se, act,
-             stride) = params
+            (kernel_size, mid_channels, out_channels, with_se, act, stride) = params
 
-            if self.arch == 'large' and i >= 12 or self.arch == 'small' and \
-                    i >= 8:
+            if self.arch == "large" and i >= 12 or self.arch == "small" and i >= 8:
                 mid_channels = mid_channels // self.reduction_factor
                 out_channels = out_channels // self.reduction_factor
 
@@ -157,8 +157,8 @@ class MobileNetV3(BaseModule):
                 se_cfg = dict(
                     channels=mid_channels,
                     ratio=4,
-                    act_cfg=(dict(type='ReLU'),
-                             dict(type='HSigmoid', bias=3.0, divisor=6.0)))
+                    act_cfg=(dict(type="ReLU"), dict(type="HSigmoid", bias=3.0, divisor=6.0)),
+                )
             else:
                 se_cfg = None
 
@@ -173,9 +173,10 @@ class MobileNetV3(BaseModule):
                 conv_cfg=self.conv_cfg,
                 norm_cfg=self.norm_cfg,
                 act_cfg=dict(type=act),
-                with_cp=self.with_cp)
+                with_cp=self.with_cp,
+            )
             in_channels = out_channels
-            layer_name = 'layer{}'.format(i + 1)
+            layer_name = "layer{}".format(i + 1)
             self.add_module(layer_name, layer)
             layers.append(layer_name)
 
@@ -184,20 +185,21 @@ class MobileNetV3(BaseModule):
         # block6 layer16 os=32 for large model
         layer = ConvModule(
             in_channels=in_channels,
-            out_channels=576 if self.arch == 'small' else 960,
+            out_channels=576 if self.arch == "small" else 960,
             kernel_size=1,
             stride=1,
             dilation=4,
             padding=0,
             conv_cfg=self.conv_cfg,
             norm_cfg=self.norm_cfg,
-            act_cfg=dict(type='HSwish'))
-        layer_name = 'layer{}'.format(len(layer_setting) + 1)
+            act_cfg=dict(type="HSwish"),
+        )
+        layer_name = "layer{}".format(len(layer_setting) + 1)
         self.add_module(layer_name, layer)
         layers.append(layer_name)
 
         # next, convert backbone MobileNetV3 to a semantic segmentation version
-        if self.arch == 'small':
+        if self.arch == "small":
             self.layer4.depthwise_conv.conv.stride = (1, 1)
             self.layer9.depthwise_conv.conv.stride = (1, 1)
             for i in range(4, len(layers)):
@@ -253,7 +255,7 @@ class MobileNetV3(BaseModule):
 
     def _freeze_stages(self):
         for i in range(self.frozen_stages + 1):
-            layer = getattr(self, f'layer{i}')
+            layer = getattr(self, f"layer{i}")
             layer.eval()
             for param in layer.parameters():
                 param.requires_grad = False

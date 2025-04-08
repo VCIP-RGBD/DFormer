@@ -25,19 +25,18 @@ def accuracy(pred, target, topk=1, thresh=None, ignore_index=None):
     """
     assert isinstance(topk, (int, tuple))
     if isinstance(topk, int):
-        topk = (topk, )
+        topk = (topk,)
         return_single = True
     else:
         return_single = False
 
     maxk = max(topk)
     if pred.size(0) == 0:
-        accu = [pred.new_tensor(0.) for i in range(len(topk))]
+        accu = [pred.new_tensor(0.0) for i in range(len(topk))]
         return accu[0] if return_single else accu
     assert pred.ndim == target.ndim + 1
     assert pred.size(0) == target.size(0)
-    assert maxk <= pred.size(1), \
-        f'maxk {maxk} exceeds pred dimension {pred.size(1)}'
+    assert maxk <= pred.size(1), f"maxk {maxk} exceeds pred dimension {pred.size(1)}"
     pred_value, pred_label = pred.topk(maxk, dim=1)
     # transpose to shape (maxk, N, ...)
     pred_label = pred_label.transpose(0, 1)
@@ -64,7 +63,7 @@ def accuracy(pred, target, topk=1, thresh=None, ignore_index=None):
 class Accuracy(nn.Module):
     """Accuracy calculation module."""
 
-    def __init__(self, topk=(1, ), thresh=None, ignore_index=None):
+    def __init__(self, topk=(1,), thresh=None, ignore_index=None):
         """Module to calculate the accuracy.
 
         Args:
@@ -88,5 +87,4 @@ class Accuracy(nn.Module):
         Returns:
             tuple[float]: The accuracies under different topk criterions.
         """
-        return accuracy(pred, target, self.topk, self.thresh,
-                        self.ignore_index)
+        return accuracy(pred, target, self.topk, self.thresh, self.ignore_index)

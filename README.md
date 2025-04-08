@@ -1,29 +1,30 @@
-# <p align=center>`DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation (ICLR 2024)`</p>
-
-<!-- [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/semantic-segmentation-on-nyu-depth-v2)](https://paperswithcode.com/sota/semantic-segmentation-on-nyu-depth-v2?p=dformer-rethinking-rgbd-representation)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/semantic-segmentation-on-sun-rgbd)](https://paperswithcode.com/sota/semantic-segmentation-on-sun-rgbd?p=dformer-rethinking-rgbd-representation)
-
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/rgb-d-salient-object-detection-on-des)](https://paperswithcode.com/sota/rgb-d-salient-object-detection-on-des?p=dformer-rethinking-rgbd-representation)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/rgb-d-salient-object-detection-on-stere)](https://paperswithcode.com/sota/rgb-d-salient-object-detection-on-stere?p=dformer-rethinking-rgbd-representation)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/rgb-d-salient-object-detection-on-sip)](https://paperswithcode.com/sota/rgb-d-salient-object-detection-on-sip?p=dformer-rethinking-rgbd-representation)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/rgb-d-salient-object-detection-on-nlpr)](https://paperswithcode.com/sota/rgb-d-salient-object-detection-on-nlpr?p=dformer-rethinking-rgbd-representation)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dformer-rethinking-rgbd-representation/rgb-d-salient-object-detection-on-nju2k)](https://paperswithcode.com/sota/rgb-d-salient-object-detection-on-nju2k?p=dformer-rethinking-rgbd-representation) -->
+# <p align=center>`DFormer for RGBD Semantic Segmentation`</p>
 
 
-> **Authors:**
+This repository contains the official implementation of the following papers:
+
+> DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation<br/>
 > [Bowen Yin](https://scholar.google.com/citations?user=xr_FRrEAAAAJ&hl=zh-CN&oi=sra),
 > [Xuying Zhang](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ),
 > [Zhongyu Li](https://scholar.google.com/citations?user=g6WHXrgAAAAJ&hl=zh-CN),
 > [Li Liu](https://scholar.google.com/citations?hl=zh-CN&user=9cMQrVsAAAAJ),
 > [Ming-Ming Cheng](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ),
-> [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN)
+> [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN) <br/>
+> ICLR 2024. 
+>[Paper Link](https://arxiv.org/abs/2309.09668) | 
+>[Homepage](https://yinbow.github.io/Projects/DFormer/index.html) |
+>[公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ) |
+>[DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD) |
+>[Jittor-Version](https://github.com/VCIP-RGBD/DFormer-Jittor) |
+
+> DFormerv2: Geometry Self-Attention for RGBD Semantic Segmentation<br/>
+> [Bo-Wen Yin](https://scholar.google.com/citations?user=xr_FRrEAAAAJ&hl=zh-CN&oi=sra),
+> [Jiao-Long Cao](https://github.com/caojiaolong),
+> [Ming-Ming Cheng](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ),
+> [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN)<br/>
+> CVPR 2025.
 
 
-[Paper Link](https://arxiv.org/abs/2309.09668) | 
-[Homepage](https://yinbow.github.io/Projects/DFormer/index.html) |
-[公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ) |
-[DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD) |
-[Jittor-Version](https://github.com/VCIP-RGBD/DFormer-Jittor) |
 
 
 :robot:[RGBD-Pretrain(You can train your own encoders)](https://github.com/VCIP-RGBD/RGBD-Pretrain)
@@ -32,9 +33,7 @@
 
 
 
-<!-- This official repository contains the source code, pre-trained, trained checkpoints, and evaluation toolbox of paper 'DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation'. The technical report could be found at [arXiv](https://arxiv.org/pdf/2309.09668.pdf). 
-The code for pre-training and RGB-D saliency will be released soon. -->
-This official repository of 'DFormer: Rethinking RGBD Representation Learning for Semantic Segmentation'.
+
 We provide the RGBD pretraining code in [RGBD-Pretrain](https://github.com/VCIP-RGBD/RGBD-Pretrain).
 You can pretrain more powerful RGBD encoders and contribute to the RGBD research.
 
@@ -49,32 +48,30 @@ We invite all to contribute in making it more acessible and useful. If you have 
     </em>
 </p>
 
-<!-- <p align="center">
-    <img src="figs/overview.jpg" width="600"  width="1200"/> <br />
+<p align="center">
+    <img src="figs/manner.jpg" width="300"  width="1200"/> <br />
     <em> 
-    Figure 2: Overview of the DFormer.
+    Figure 2: Comparisons among the main RGBD segmentation pipelines and our approach. (a) Use dual encoders to encode RGB and depth respectively and design fusion modules to fusion them, like CMX and GeminiFUsion; (b) Adopt an unified RGBD encoder to extract and
+    fuse RGBD features, like DFormer; (c) DFormerv2 use depth to form
+    a geometry prior of the scene and then enhance the visual features.
     </em>
-</p> -->
+</p>
 
-
-
-
+<p align="center">
+    <img src="figs/geo_attention.png" width="600"  width="1200"/> <br />
+    <em> 
+    Figure 2: The geometry attention map in our DFormerv2 and the effect of other attention mechanisms. Our geometry attention is endowed with the 3D geometry perception ability and can focus on the related regions of the whole scene.
+    </em>
+</p>
 
 
 ## 1. 🌟  NEWS 
 
-<!-- - [2023/09/05] Releasing the codebase of DFormer and all the pre-trained checkpoints.
-
-- [2023/10/26] Releasing the RGBD SOD codebase of DFormer at [DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD).
-
-- [2023/12/03] Adding the tutorial about adding new datasets at [Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset). -->
-
+- [2025/03/09] Our DFormerv2 has been accpeted by CVPR 2025.
 - [2025/02/19] The jittor implementation of DFormer is avaiable at [Jittor-Version](https://github.com/VCIP-RGBD/DFormer-Jittor).
 - [2024/10/12] Based on our DFormer, Wu's method UBCRCL has won the RUNNER-up at [Endoscopic Vision Challenge SegSTRONG-C Subchallenge](https://segstrongc.cs.jhu.edu/) of MICCAI 24. Congratulation!
 - [2024/04/21] We have upgraded and optimized the framework, greatly reducing training time, i.e., training duration for DFormer-L is reduced to ~12h from over 1day.
 - [2024/01/16] Our DFormer has been accpeted by The International Conference on Learning Representations (ICLR 2024).
-
-
 
 ## 2. 🚀 Get Start
 
@@ -110,7 +107,7 @@ Compred to the original datasets, we map the depth (.npy) to .png via 'plt.imsav
 
 - **Checkpoints:** 
 
-ImageNet-1K Pre-trained DFormers T/S/B/L and NYUDepth or SUNRGBD trained DFormers T/S/B/L can be downloaded at:
+ImageNet-1K Pre-trained and NYUDepth or SUNRGBD trained DFormer-T/S/B/T and DFormerv2-S/B/L can be downloaded at:
 <!-- 
 | Pre-trained | [GoogleDrive](https://drive.google.com/drive/folders/1YuW7qUtnguUFkhC-sfqGySrerjK0rZJX?usp=sharing) | [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/EhTTF_ZofnFIkz2WSDFAiiIBEIubZUpIwDQYwm9Hvxwu8Q?e=x8XumL) | [BaiduNetdisk](https://pan.baidu.com/s/1JlexzFqMcZOXPNiNkE1zRA?pwd=gct6) | 
 |:---: |:---:|:---:|:---:|
@@ -130,11 +127,11 @@ NYUDepth v2 trained DFormers T/S/B/L can be downloaded at
 |:---: |:---:|:---:|:---:| -->
 
 
-| Weights | GoogleDrive | OneDrive | BaiduNetdisk|
-|-------|-------| - | - |
-| Pretrained | [GoogleDrive](https://drive.google.com/drive/folders/1YuW7qUtnguUFkhC-sfqGySrerjK0rZJX?usp=sharing) | [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/EhTTF_ZofnFIkz2WSDFAiiIBEIubZUpIwDQYwm9Hvxwu8Q?e=x8XumL) | [BaiduNetdisk](https://pan.baidu.com/s/1JlexzFqMcZOXPNiNkE1zRA?pwd=gct6) | 
-|NYUDepthv2 (57.2mIoU)|[GoogleDrive](https://drive.google.com/drive/folders/1P5HwnAvifEI6xiTAx6id24FUCt_i7GH8?usp=sharing) | [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/ErAmlYuhS6FCqGQZNGZy0_EBYgJsK3pFTsi2q9g14MEE_A?e=VoKUAf) | [BaiduNetdisk](https://pan.baidu.com/s/1AkvlsAvJPv21bz2sXlrADQ?pwd=6vuu) | 
-|SUNRGBD (52.5mIoU)|[GoogleDrive](https://drive.google.com/drive/folders/1b005OUO8QXzh0sJM4iykns_UdlbMNZb8?usp=sharing) | [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/EiNdyUV486BFvb7H2yJWSCMBElOj-m6EppIy4dSXNX-yNw?e=fu2Che) | [BaiduNetdisk](https://pan.baidu.com/s/1D6UMiBv6fApV5lafo9J04w?pwd=7ewv) | 
+| Weights | DFormer | DFormerv2 |
+|-------|-------| -  |
+| Pretrained | [GoogleDrive](https://drive.google.com/drive/folders/1YuW7qUtnguUFkhC-sfqGySrerjK0rZJX?usp=sharing), [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/EhTTF_ZofnFIkz2WSDFAiiIBEIubZUpIwDQYwm9Hvxwu8Q?e=x8XumL), [BaiduNetdisk](https://pan.baidu.com/s/1JlexzFqMcZOXPNiNkE1zRA?pwd=gct6) | [BaiduNetdisk](https://pan.baidu.com/s/1alSvGtGpoW5TRyLxOt1Txw?pwd=i3pn) |
+|NYUDepthv2 |[GoogleDrive](https://drive.google.com/drive/folders/1P5HwnAvifEI6xiTAx6id24FUCt_i7GH8?usp=sharing), [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/ErAmlYuhS6FCqGQZNGZy0_EBYgJsK3pFTsi2q9g14MEE_A?e=VoKUAf), [BaiduNetdisk](https://pan.baidu.com/s/1AkvlsAvJPv21bz2sXlrADQ?pwd=6vuu) | [BaiduNetdisk](https://pan.baidu.com/s/1hi_XPCv1JDRBjwk8XN7e-A?pwd=3vym) |
+|SUNRGBD|[GoogleDrive](https://drive.google.com/drive/folders/1b005OUO8QXzh0sJM4iykns_UdlbMNZb8?usp=sharing), [OneDrive](https://mailnankaieducn-my.sharepoint.com/:f:/g/personal/bowenyin_mail_nankai_edu_cn/EiNdyUV486BFvb7H2yJWSCMBElOj-m6EppIy4dSXNX-yNw?e=fu2Che), [BaiduNetdisk](https://pan.baidu.com/s/1D6UMiBv6fApV5lafo9J04w?pwd=7ewv) | [BaiduNetdisk](https://pan.baidu.com/s/1NUOgzYmrXmwU7XA8RTRYPg?pwd=ytr7) |
 
 
  <br />
@@ -151,6 +148,9 @@ NYUDepth v2 trained DFormers T/S/B/L can be downloaded at
     |-- <DFormer_Base.pth.tar>
     |-- <DFormer_Small.pth.tar>
     |-- <DFormer_Tiny.pth.tar>
+    |-- <DFormerv2_Large_pretrained.pth>
+    |-- <DFormerv2_Base_pretrained.pth>
+    |-- <DFormerv2_Small_pretrained.pth>
 |-- <trained>
     |-- <NYUDepthv2>
         |-- ...
@@ -225,14 +225,16 @@ ps: The latency highly depends on the devices. It is recommended to compare the 
 <p align="center">
     <img src="figs/Semseg.jpg" width="600"  width="1200"/> <br />
     <em> 
+    Table 1: Comparisons between the existing methods and our DFormer.
     </em>
 </p>
 
-<!-- <p align="center">
-    <img src="figs/Sal.jpg" width="600"  width="1200"/> <br />
+<p align="center">
+    <img src="figs/dformerv2_table.jpg" width="600"  width="1200"/> <br />
     <em> 
+    Table 2: Comparisons between the existing methods and our DFormerv2.
     </em>
-</p> -->
+</p>
 
 ## 🕙 ToDo
 - [ ] Tutorial on applying the DFormer encoder to the frameworks of other tasks
@@ -252,7 +254,6 @@ You may want to cite:
   booktitle={ICLR},
   year={2024}
 }
-
 ```
 
 

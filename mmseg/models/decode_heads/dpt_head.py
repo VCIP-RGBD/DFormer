@@ -24,55 +24,47 @@ class ReassembleBlocks(BaseModule):
         init_cfg (dict, optional): Initialization config dict. Default: None.
     """
 
-    def __init__(self,
-                 in_channels=768,
-                 out_channels=[96, 192, 384, 768],
-                 readout_type='ignore',
-                 patch_size=16,
-                 init_cfg=None):
+    def __init__(
+        self, in_channels=768, out_channels=[96, 192, 384, 768], readout_type="ignore", patch_size=16, init_cfg=None
+    ):
         super(ReassembleBlocks, self).__init__(init_cfg)
 
-        assert readout_type in ['ignore', 'add', 'project']
+        assert readout_type in ["ignore", "add", "project"]
         self.readout_type = readout_type
         self.patch_size = patch_size
 
-        self.projects = nn.ModuleList([
-            ConvModule(
-                in_channels=in_channels,
-                out_channels=out_channel,
-                kernel_size=1,
-                act_cfg=None,
-            ) for out_channel in out_channels
-        ])
+        self.projects = nn.ModuleList(
+            [
+                ConvModule(
+                    in_channels=in_channels,
+                    out_channels=out_channel,
+                    kernel_size=1,
+                    act_cfg=None,
+                )
+                for out_channel in out_channels
+            ]
+        )
 
-        self.resize_layers = nn.ModuleList([
-            nn.ConvTranspose2d(
-                in_channels=out_channels[0],
-                out_channels=out_channels[0],
-                kernel_size=4,
-                stride=4,
-                padding=0),
-            nn.ConvTranspose2d(
-                in_channels=out_channels[1],
-                out_channels=out_channels[1],
-                kernel_size=2,
-                stride=2,
-                padding=0),
-            nn.Identity(),
-            nn.Conv2d(
-                in_channels=out_channels[3],
-                out_channels=out_channels[3],
-                kernel_size=3,
-                stride=2,
-                padding=1)
-        ])
-        if self.readout_type == 'project':
+        self.resize_layers = nn.ModuleList(
+            [
+                nn.ConvTranspose2d(
+                    in_channels=out_channels[0], out_channels=out_channels[0], kernel_size=4, stride=4, padding=0
+                ),
+                nn.ConvTranspose2d(
+                    in_channels=out_channels[1], out_channels=out_channels[1], kernel_size=2, stride=2, padding=0
+                ),
+                nn.Identity(),
+                nn.Conv2d(
+                    in_channels=out_channels[3], out_channels=out_channels[3], kernel_size=3, stride=2, padding=1
+                ),
+            ]
+        )
+        if self.readout_type == "project":
             self.readout_projects = nn.ModuleList()
             for _ in range(len(self.projects)):
                 self.readout_projects.append(
-                    nn.Sequential(
-                        Linear(2 * in_channels, in_channels),
-                        build_activation_layer(dict(type='GELU'))))
+                    nn.Sequential(Linear(2 * in_channels, in_channels), build_activation_layer(dict(type="GELU")))
+                )
 
     def forward(self, inputs):
         assert isinstance(inputs, list)
@@ -81,12 +73,12 @@ class ReassembleBlocks(BaseModule):
             assert len(x) == 2
             x, cls_token = x[0], x[1]
             feature_shape = x.shape
-            if self.readout_type == 'project':
+            if self.readout_type == "project":
                 x = x.flatten(2).permute((0, 2, 1))
                 readout = cls_token.unsqueeze(1).expand_as(x)
                 x = self.readout_projects[i](torch.cat((x, readout), -1))
                 x = x.permute(0, 2, 1).reshape(feature_shape)
-            elif self.readout_type == 'add':
+            elif self.readout_type == "add":
                 x = x.flatten(2) + cls_token.unsqueeze(-1)
                 x = x.reshape(feature_shape)
             else:
@@ -109,13 +101,7 @@ class PreActResidualConvUnit(BaseModule):
         init_cfg (dict, optional): Initialization config dict. Default: None.
     """
 
-    def __init__(self,
-                 in_channels,
-                 act_cfg,
-                 norm_cfg,
-                 stride=1,
-                 dilation=1,
-                 init_cfg=None):
+    def __init__(self, in_channels, act_cfg, norm_cfg, stride=1, dilation=1, init_cfg=None):
         super(PreActResidualConvUnit, self).__init__(init_cfg)
 
         self.conv1 = ConvModule(
@@ -128,7 +114,8 @@ class PreActResidualConvUnit(BaseModule):
             norm_cfg=norm_cfg,
             act_cfg=act_cfg,
             bias=False,
-            order=('act', 'conv', 'norm'))
+            order=("act", "conv", "norm"),
+        )
 
         self.conv2 = ConvModule(
             in_channels,
@@ -138,7 +125,8 @@ class PreActResidualConvUnit(BaseModule):
             norm_cfg=norm_cfg,
             act_cfg=act_cfg,
             bias=False,
-            order=('act', 'conv', 'norm'))
+            order=("act", "conv", "norm"),
+        )
 
     def forward(self, inputs):
         inputs_ = inputs.clone()
@@ -161,13 +149,7 @@ class FeatureFusionBlock(BaseModule):
         init_cfg (dict, optional): Initialization config dict. Default: None.
     """
 
-    def __init__(self,
-                 in_channels,
-                 act_cfg,
-                 norm_cfg,
-                 expand=False,
-                 align_corners=True,
-                 init_cfg=None):
+    def __init__(self, in_channels, act_cfg, norm_cfg, expand=False, align_corners=True, init_cfg=None):
         super(FeatureFusionBlock, self).__init__(init_cfg)
 
         self.in_channels = in_channels
@@ -178,36 +160,21 @@ class FeatureFusionBlock(BaseModule):
         if self.expand:
             self.out_channels = in_channels // 2
 
-        self.project = ConvModule(
-            self.in_channels,
-            self.out_channels,
-            kernel_size=1,
-            act_cfg=None,
-            bias=True)
+        self.project = ConvModule(self.in_channels, self.out_channels, kernel_size=1, act_cfg=None, bias=True)
 
-        self.res_conv_unit1 = PreActResidualConvUnit(
-            in_channels=self.in_channels, act_cfg=act_cfg, norm_cfg=norm_cfg)
-        self.res_conv_unit2 = PreActResidualConvUnit(
-            in_channels=self.in_channels, act_cfg=act_cfg, norm_cfg=norm_cfg)
+        self.res_conv_unit1 = PreActResidualConvUnit(in_channels=self.in_channels, act_cfg=act_cfg, norm_cfg=norm_cfg)
+        self.res_conv_unit2 = PreActResidualConvUnit(in_channels=self.in_channels, act_cfg=act_cfg, norm_cfg=norm_cfg)
 
     def forward(self, *inputs):
         x = inputs[0]
         if len(inputs) == 2:
             if x.shape != inputs[1].shape:
-                res = resize(
-                    inputs[1],
-                    size=(x.shape[2], x.shape[3]),
-                    mode='bilinear',
-                    align_corners=False)
+                res = resize(inputs[1], size=(x.shape[2], x.shape[3]), mode="bilinear", align_corners=False)
             else:
                 res = inputs[1]
             x = x + self.res_conv_unit1(res)
         x = self.res_conv_unit2(x)
-        x = resize(
-            x,
-            scale_factor=2,
-            mode='bilinear',
-            align_corners=self.align_corners)
+        x = resize(x, scale_factor=2, mode="bilinear", align_corners=self.align_corners)
         x = self.project(x)
         return x
 
@@ -233,48 +200,34 @@ class DPTHead(BaseDecodeHead):
             Default: dict(type='BN').
     """
 
-    def __init__(self,
-                 embed_dims=768,
-                 post_process_channels=[96, 192, 384, 768],
-                 readout_type='ignore',
-                 patch_size=16,
-                 expand_channels=False,
-                 act_cfg=dict(type='ReLU'),
-                 norm_cfg=dict(type='BN'),
-                 **kwargs):
+    def __init__(
+        self,
+        embed_dims=768,
+        post_process_channels=[96, 192, 384, 768],
+        readout_type="ignore",
+        patch_size=16,
+        expand_channels=False,
+        act_cfg=dict(type="ReLU"),
+        norm_cfg=dict(type="BN"),
+        **kwargs,
+    ):
         super(DPTHead, self).__init__(**kwargs)
 
         self.in_channels = self.in_channels
         self.expand_channels = expand_channels
-        self.reassemble_blocks = ReassembleBlocks(embed_dims,
-                                                  post_process_channels,
-                                                  readout_type, patch_size)
+        self.reassemble_blocks = ReassembleBlocks(embed_dims, post_process_channels, readout_type, patch_size)
 
         self.post_process_channels = [
-            channel * math.pow(2, i) if expand_channels else channel
-            for i, channel in enumerate(post_process_channels)
+            channel * math.pow(2, i) if expand_channels else channel for i, channel in enumerate(post_process_channels)
         ]
         self.convs = nn.ModuleList()
         for channel in self.post_process_channels:
-            self.convs.append(
-                ConvModule(
-                    channel,
-                    self.channels,
-                    kernel_size=3,
-                    padding=1,
-                    act_cfg=None,
-                    bias=False))
+            self.convs.append(ConvModule(channel, self.channels, kernel_size=3, padding=1, act_cfg=None, bias=False))
         self.fusion_blocks = nn.ModuleList()
         for _ in range(len(self.convs)):
-            self.fusion_blocks.append(
-                FeatureFusionBlock(self.channels, act_cfg, norm_cfg))
+            self.fusion_blocks.append(FeatureFusionBlock(self.channels, act_cfg, norm_cfg))
         self.fusion_blocks[0].res_conv_unit1 = None
-        self.project = ConvModule(
-            self.channels,
-            self.channels,
-            kernel_size=3,
-            padding=1,
-            norm_cfg=norm_cfg)
+        self.project = ConvModule(self.channels, self.channels, kernel_size=3, padding=1, norm_cfg=norm_cfg)
         self.num_fusion_blocks = len(self.fusion_blocks)
         self.num_reassemble_blocks = len(self.reassemble_blocks.resize_layers)
         self.num_post_process_channels = len(self.post_process_channels)

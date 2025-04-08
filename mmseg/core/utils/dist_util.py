@@ -9,7 +9,7 @@ def check_dist_init():
     return dist.is_available() and dist.is_initialized()
 
 
-def sync_random_seed(seed=None, device='cuda'):
+def sync_random_seed(seed=None, device="cuda"):
     """Make sure different ranks share the same seed. All workers must call
     this function, otherwise it will deadlock. This method is generally used in
     `DistributedSampler`, because the seed should be identical across all

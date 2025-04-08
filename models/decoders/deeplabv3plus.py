@@ -7,29 +7,28 @@ class DeepLabV3Plus(nn.Module):
     def __init__(self, in_channels=[256, 512, 1024, 2048], num_classes=40, norm_layer=nn.BatchNorm2d):
         super(DeepLabV3Plus, self).__init__()
         self.num_classes = num_classes
-        
+
         self.aspp = ASPP(in_channels=in_channels[3], atrous_rates=[12, 24, 36], norm_layer=norm_layer)
         self.low_level = nn.Sequential(
-                            nn.Conv2d(in_channels[0], 48, kernel_size=3, stride=1, padding=1),
-                            norm_layer(48),
-                            nn.ReLU(inplace=True)
-                            )
+            nn.Conv2d(in_channels[0], 48, kernel_size=3, stride=1, padding=1), norm_layer(48), nn.ReLU(inplace=True)
+        )
         self.block = nn.Sequential(
-                        nn.Conv2d(304, 256, kernel_size=3, stride=1, padding=1),
-                        norm_layer(256),
-                        nn.ReLU(inplace=True),
-                        #nn.Dropout(0.5),
-                        #nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
-                        #norm_layer(256),
-                        #nn.ReLU(inplace=True),
-                        nn.Dropout(0.1),
-                        nn.Conv2d(256, num_classes, 1))
+            nn.Conv2d(304, 256, kernel_size=3, stride=1, padding=1),
+            norm_layer(256),
+            nn.ReLU(inplace=True),
+            # nn.Dropout(0.5),
+            # nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
+            # norm_layer(256),
+            # nn.ReLU(inplace=True),
+            nn.Dropout(0.1),
+            nn.Conv2d(256, num_classes, 1),
+        )
 
     def forward(self, inputs):
         c1, _, _, c4 = inputs
         c1 = self.low_level(c1)
         c4 = self.aspp(c4)
-        c4 = F.interpolate(c4, c1.size()[2:], mode='bilinear', align_corners=True)
+        c4 = F.interpolate(c4, c1.size()[2:], mode="bilinear", align_corners=True)
         output = self.block(torch.cat([c4, c1], dim=1))
         return output
 
@@ -40,7 +39,7 @@ class ASPPConv(nn.Module):
         self.block = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, 3, padding=atrous_rate, dilation=atrous_rate, bias=False),
             norm_layer(out_channels),
-            nn.ReLU(True)
+            nn.ReLU(True),
         )
 
     def forward(self, x):
@@ -54,13 +53,13 @@ class AsppPooling(nn.Module):
             nn.AdaptiveAvgPool2d(1),
             nn.Conv2d(in_channels, out_channels, 1, bias=False),
             norm_layer(out_channels),
-            nn.ReLU(True)
+            nn.ReLU(True),
         )
 
     def forward(self, x):
         size = x.size()[2:]
         pool = self.gap(x)
-        out = F.interpolate(pool, size, mode='bilinear', align_corners=True)
+        out = F.interpolate(pool, size, mode="bilinear", align_corners=True)
         return out
 
 
@@ -69,9 +68,7 @@ class ASPP(nn.Module):
         super(ASPP, self).__init__()
         out_channels = 256
         self.b0 = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, 1, bias=False),
-            norm_layer(out_channels),
-            nn.ReLU(True)
+            nn.Conv2d(in_channels, out_channels, 1, bias=False), norm_layer(out_channels), nn.ReLU(True)
         )
 
         rate1, rate2, rate3 = tuple(atrous_rates)
@@ -84,7 +81,7 @@ class ASPP(nn.Module):
             nn.Conv2d(5 * out_channels, out_channels, 1, bias=False),
             norm_layer(out_channels),
             nn.ReLU(True),
-            nn.Dropout(0.5)
+            nn.Dropout(0.5),
         )
 
     def forward(self, x):

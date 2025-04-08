@@ -21,12 +21,7 @@ class FCNHead(BaseDecodeHead):
         dilation (int): The dilation rate for convs in the head. Default: 1.
     """
 
-    def __init__(self,
-                 num_convs=2,
-                 kernel_size=3,
-                 concat_input=True,
-                 dilation=1,
-                 **kwargs):
+    def __init__(self, num_convs=2, kernel_size=3, concat_input=True, dilation=1, **kwargs):
         assert num_convs >= 0 and dilation > 0 and isinstance(dilation, int)
         self.num_convs = num_convs
         self.concat_input = concat_input
@@ -48,7 +43,9 @@ class FCNHead(BaseDecodeHead):
                     dilation=dilation,
                     conv_cfg=self.conv_cfg,
                     norm_cfg=self.norm_cfg,
-                    act_cfg=self.act_cfg))
+                    act_cfg=self.act_cfg,
+                )
+            )
 
         if len(convs) == 0:
             self.convs = nn.Identity()
@@ -62,7 +59,8 @@ class FCNHead(BaseDecodeHead):
                 padding=kernel_size // 2,
                 conv_cfg=self.conv_cfg,
                 norm_cfg=self.norm_cfg,
-                act_cfg=self.act_cfg)
+                act_cfg=self.act_cfg,
+            )
 
     def _forward_feature(self, inputs):
         """Forward function for feature maps before classifying each pixel with

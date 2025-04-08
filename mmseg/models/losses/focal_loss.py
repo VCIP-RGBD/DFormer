@@ -10,16 +10,18 @@ from .utils import weight_reduce_loss
 
 
 # This method is used when cuda is not available
-def py_sigmoid_focal_loss(pred,
-                          target,
-                          one_hot_target=None,
-                          weight=None,
-                          gamma=2.0,
-                          alpha=0.5,
-                          class_weight=None,
-                          valid_mask=None,
-                          reduction='mean',
-                          avg_factor=None):
+def py_sigmoid_focal_loss(
+    pred,
+    target,
+    one_hot_target=None,
+    weight=None,
+    gamma=2.0,
+    alpha=0.5,
+    class_weight=None,
+    valid_mask=None,
+    reduction="mean",
+    avg_factor=None,
+):
     """PyTorch version of `Focal Loss <https://arxiv.org/abs/1708.02002>`_.
 
     Args:
@@ -47,11 +49,9 @@ def py_sigmoid_focal_loss(pred,
     pred_sigmoid = pred.sigmoid()
     target = target.type_as(pred)
     one_minus_pt = (1 - pred_sigmoid) * target + pred_sigmoid * (1 - target)
-    focal_weight = (alpha * target + (1 - alpha) *
-                    (1 - target)) * one_minus_pt.pow(gamma)
+    focal_weight = (alpha * target + (1 - alpha) * (1 - target)) * one_minus_pt.pow(gamma)
 
-    loss = F.binary_cross_entropy_with_logits(
-        pred, target, reduction='none') * focal_weight
+    loss = F.binary_cross_entropy_with_logits(pred, target, reduction="none") * focal_weight
     final_weight = torch.ones(1, pred.size(1)).type_as(loss)
     if weight is not None:
         if weight.shape != loss.shape and weight.size(0) == loss.size(0):
@@ -68,16 +68,18 @@ def py_sigmoid_focal_loss(pred,
     return loss
 
 
-def sigmoid_focal_loss(pred,
-                       target,
-                       one_hot_target,
-                       weight=None,
-                       gamma=2.0,
-                       alpha=0.5,
-                       class_weight=None,
-                       valid_mask=None,
-                       reduction='mean',
-                       avg_factor=None):
+def sigmoid_focal_loss(
+    pred,
+    target,
+    one_hot_target,
+    weight=None,
+    gamma=2.0,
+    alpha=0.5,
+    class_weight=None,
+    valid_mask=None,
+    reduction="mean",
+    avg_factor=None,
+):
     r"""A wrapper of cuda version `Focal Loss
     <https://arxiv.org/abs/1708.02002>`_.
     Args:
@@ -110,14 +112,11 @@ def sigmoid_focal_loss(pred,
         # multiplying the loss by 2, the effect of setting alpha as 0.5 is
         # undone. The alpha of type list is used to regulate the loss in the
         # post-processing process.
-        loss = _sigmoid_focal_loss(pred.contiguous(), target.contiguous(),
-                                   gamma, 0.5, None, 'none') * 2
+        loss = _sigmoid_focal_loss(pred.contiguous(), target.contiguous(), gamma, 0.5, None, "none") * 2
         alpha = pred.new_tensor(alpha)
-        final_weight = final_weight * (
-            alpha * one_hot_target + (1 - alpha) * (1 - one_hot_target))
+        final_weight = final_weight * (alpha * one_hot_target + (1 - alpha) * (1 - one_hot_target))
     else:
-        loss = _sigmoid_focal_loss(pred.contiguous(), target.contiguous(),
-                                   gamma, alpha, None, 'none')
+        loss = _sigmoid_focal_loss(pred.contiguous(), target.contiguous(), gamma, alpha, None, "none")
     if weight is not None:
         if weight.shape != loss.shape and weight.size(0) == loss.size(0):
             # For most cases, weight is of shape (N, ),
@@ -135,15 +134,16 @@ def sigmoid_focal_loss(pred,
 
 @LOSSES.register_module()
 class FocalLoss(nn.Module):
-
-    def __init__(self,
-                 use_sigmoid=True,
-                 gamma=2.0,
-                 alpha=0.5,
-                 reduction='mean',
-                 class_weight=None,
-                 loss_weight=1.0,
-                 loss_name='loss_focal'):
+    def __init__(
+        self,
+        use_sigmoid=True,
+        gamma=2.0,
+        alpha=0.5,
+        reduction="mean",
+        class_weight=None,
+        loss_weight=1.0,
+        loss_name="loss_focal",
+    ):
         """`Focal Loss <https://arxiv.org/abs/1708.02002>`_
         Args:
             use_sigmoid (bool, optional): Whether to the prediction is
@@ -173,21 +173,15 @@ class FocalLoss(nn.Module):
                 be the prefix of the name. Defaults to 'loss_focal'.
         """
         super(FocalLoss, self).__init__()
-        assert use_sigmoid is True, \
-            'AssertionError: Only sigmoid focal loss supported now.'
-        assert reduction in ('none', 'mean', 'sum'), \
-            "AssertionError: reduction should be 'none', 'mean' or " \
-            "'sum'"
-        assert isinstance(alpha, (float, list)), \
-            'AssertionError: alpha should be of type float'
-        assert isinstance(gamma, float), \
-            'AssertionError: gamma should be of type float'
-        assert isinstance(loss_weight, float), \
-            'AssertionError: loss_weight should be of type float'
-        assert isinstance(loss_name, str), \
-            'AssertionError: loss_name should be of type str'
-        assert isinstance(class_weight, list) or class_weight is None, \
-            'AssertionError: class_weight must be None or of type list'
+        assert use_sigmoid is True, "AssertionError: Only sigmoid focal loss supported now."
+        assert reduction in ("none", "mean", "sum"), "AssertionError: reduction should be 'none', 'mean' or 'sum'"
+        assert isinstance(alpha, (float, list)), "AssertionError: alpha should be of type float"
+        assert isinstance(gamma, float), "AssertionError: gamma should be of type float"
+        assert isinstance(loss_weight, float), "AssertionError: loss_weight should be of type float"
+        assert isinstance(loss_name, str), "AssertionError: loss_name should be of type str"
+        assert isinstance(class_weight, list) or class_weight is None, (
+            "AssertionError: class_weight must be None or of type list"
+        )
         self.use_sigmoid = use_sigmoid
         self.gamma = gamma
         self.alpha = alpha
@@ -196,14 +190,7 @@ class FocalLoss(nn.Module):
         self.loss_weight = loss_weight
         self._loss_name = loss_name
 
-    def forward(self,
-                pred,
-                target,
-                weight=None,
-                avg_factor=None,
-                reduction_override=None,
-                ignore_index=255,
-                **kwargs):
+    def forward(self, pred, target, weight=None, avg_factor=None, reduction_override=None, ignore_index=255, **kwargs):
         """Forward function.
 
         Args:
@@ -228,15 +215,13 @@ class FocalLoss(nn.Module):
         Returns:
             torch.Tensor: The calculated loss
         """
-        assert isinstance(ignore_index, int), \
-            'ignore_index must be of type int'
-        assert reduction_override in (None, 'none', 'mean', 'sum'), \
-            "AssertionError: reduction should be 'none', 'mean' or " \
-            "'sum'"
-        assert pred.shape == target.shape or \
-               (pred.size(0) == target.size(0) and
-                pred.shape[2:] == target.shape[1:]), \
-               "The shape of pred doesn't match the shape of target"
+        assert isinstance(ignore_index, int), "ignore_index must be of type int"
+        assert reduction_override in (None, "none", "mean", "sum"), (
+            "AssertionError: reduction should be 'none', 'mean' or 'sum'"
+        )
+        assert pred.shape == target.shape or (pred.size(0) == target.size(0) and pred.shape[2:] == target.shape[1:]), (
+            "The shape of pred doesn't match the shape of target"
+        )
 
         original_shape = pred.shape
 
@@ -262,11 +247,9 @@ class FocalLoss(nn.Module):
             target = target.view(-1).contiguous()
             valid_mask = (target != ignore_index).view(-1, 1)
             # avoid raising error when using F.one_hot()
-            target = torch.where(target == ignore_index, target.new_tensor(0),
-                                 target)
+            target = torch.where(target == ignore_index, target.new_tensor(0), target)
 
-        reduction = (
-            reduction_override if reduction_override else self.reduction)
+        reduction = reduction_override if reduction_override else self.reduction
         if self.use_sigmoid:
             num_classes = pred.size(1)
             if torch.cuda.is_available() and pred.is_cuda:
@@ -282,8 +265,7 @@ class FocalLoss(nn.Module):
                 if target.dim() == 1:
                     target = F.one_hot(target, num_classes=num_classes)
                 else:
-                    valid_mask = (target.argmax(dim=1) != ignore_index).view(
-                        -1, 1)
+                    valid_mask = (target.argmax(dim=1) != ignore_index).view(-1, 1)
                 calculate_loss_func = py_sigmoid_focal_loss
 
             loss_cls = self.loss_weight * calculate_loss_func(
@@ -296,16 +278,15 @@ class FocalLoss(nn.Module):
                 class_weight=self.class_weight,
                 valid_mask=valid_mask,
                 reduction=reduction,
-                avg_factor=avg_factor)
+                avg_factor=avg_factor,
+            )
 
-            if reduction == 'none':
+            if reduction == "none":
                 # [N, C] -> [C, N]
                 loss_cls = loss_cls.transpose(0, 1)
                 # [C, N] -> [C, B, d1, d2, ...]
                 # original_shape: [B, C, d1, d2, ...]
-                loss_cls = loss_cls.reshape(original_shape[1],
-                                            original_shape[0],
-                                            *original_shape[2:])
+                loss_cls = loss_cls.reshape(original_shape[1], original_shape[0], *original_shape[2:])
                 # [C, B, d1, d2, ...] -> [B, C, d1, d2, ...]
                 loss_cls = loss_cls.transpose(0, 1).contiguous()
         else:

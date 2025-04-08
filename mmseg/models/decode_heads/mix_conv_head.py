@@ -8,6 +8,7 @@ from ..builder import HEADS
 from .decode_head import BaseDecodeHead
 from .aspp_head import ASPPHead, ASPPModule
 
+
 class MixConv(nn.Module):
     def __init__(self, dim, kernels=[1, 7, 11, 15]):
         super().__init__()
@@ -32,6 +33,7 @@ class MixConv(nn.Module):
 
         return x
 
+
 @HEADS.register_module()
 class MixConvHead(BaseDecodeHead):
     """Is Attention Better Than Matrix Decomposition?
@@ -41,13 +43,12 @@ class MixConvHead(BaseDecodeHead):
         ham_channels (int): input channels for Hamburger.
         ham_kwargs (int): kwagrs for Ham.
 
-    TODO: 
-        Add other MD models (Ham). 
+    TODO:
+        Add other MD models (Ham).
     """
 
     def __init__(self, **kwargs):
-        super(MixConvHead, self).__init__(
-            input_transform='multiple_select', **kwargs)
+        super(MixConvHead, self).__init__(input_transform="multiple_select", **kwargs)
         # self.channels = channels
 
         self.squeeze = ConvModule(
@@ -56,28 +57,23 @@ class MixConvHead(BaseDecodeHead):
             1,
             conv_cfg=self.conv_cfg,
             norm_cfg=self.norm_cfg,
-            act_cfg=self.act_cfg)
+            act_cfg=self.act_cfg,
+        )
 
         self.conv = MixConv(dim=self.channels)
 
         self.align = ConvModule(
-            self.channels,
-            self.channels,
-            1,
-            conv_cfg=self.conv_cfg,
-            norm_cfg=self.norm_cfg,
-            act_cfg=self.act_cfg)
+            self.channels, self.channels, 1, conv_cfg=self.conv_cfg, norm_cfg=self.norm_cfg, act_cfg=self.act_cfg
+        )
 
     def forward(self, inputs):
         """Forward function."""
         inputs = self._transform_inputs(inputs)
 
-        inputs = [resize(
-            level,
-            size=inputs[0].shape[2:],
-            mode='bilinear',
-            align_corners=self.align_corners
-        ) for level in inputs]
+        inputs = [
+            resize(level, size=inputs[0].shape[2:], mode="bilinear", align_corners=self.align_corners)
+            for level in inputs
+        ]
 
         inputs = torch.cat(inputs, dim=1)
         x = self.squeeze(inputs)
