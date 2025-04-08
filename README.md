@@ -17,12 +17,14 @@ This repository contains the official implementation of the following papers:
 >[DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD) |
 >[Jittor-Version](https://github.com/VCIP-RGBD/DFormer-Jittor) |
 
+
 > DFormerv2: Geometry Self-Attention for RGBD Semantic Segmentation<br/>
 > [Bo-Wen Yin](https://scholar.google.com/citations?user=xr_FRrEAAAAJ&hl=zh-CN&oi=sra),
 > [Jiao-Long Cao](https://github.com/caojiaolong),
 > [Ming-Ming Cheng](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ),
 > [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN)<br/>
-> CVPR 2025.
+> CVPR 2025. 
+> [Paper Link](https://arxiv.org/abs/2504.04701)
 
 
 
@@ -32,8 +34,7 @@ This repository contains the official implementation of the following papers:
 :anchor:[Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset)
 
 
-
-
+We provide the geometry prior generation manner in DFormerv2, and you can further develope it and enhance the depth-related reasearch.
 We provide the RGBD pretraining code in [RGBD-Pretrain](https://github.com/VCIP-RGBD/RGBD-Pretrain).
 You can pretrain more powerful RGBD encoders and contribute to the RGBD research.
 
@@ -67,6 +68,7 @@ We invite all to contribute in making it more acessible and useful. If you have 
 
 ## 1. 🌟  NEWS 
 
+- [2025/04/08] The code of DFormerv2 is available.
 - [2025/03/09] Our DFormerv2 has been accpeted by CVPR 2025.
 - [2025/02/19] The jittor implementation of DFormer is avaiable at [Jittor-Version](https://github.com/VCIP-RGBD/DFormer-Jittor).
 - [2024/10/12] Based on our DFormer, Wu's method UBCRCL has won the RUNNER-up at [Endoscopic Vision Challenge SegSTRONG-C Subchallenge](https://segstrongc.cs.jhu.edu/) of MICCAI 24. Congratulation!
@@ -253,6 +255,13 @@ You may want to cite:
   author={Yin, Bowen and Zhang, Xuying and Li, Zhong-Yu and Liu, Li and Cheng, Ming-Ming and Hou, Qibin},
   booktitle={ICLR},
   year={2024}
+}
+
+@inproceedings{dformerv2,
+      title={DFormerv2: Geometry Self-Attention for RGBD Semantic Segmentation}, 
+      author={Bo-Wen Yin and Jiao-Long Cao and Ming-Ming Cheng and Qibin Hou},
+      booktitle={CVPR},
+      year={2025}
 }
 ```
 
