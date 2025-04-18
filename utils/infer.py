@@ -4,18 +4,19 @@ import os
 import random
 import sys
 import time
+from importlib import import_module
 
 import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.nn as nn
-from models.builder import EncoderDecoder as segmodel
 from tensorboardX import SummaryWriter
 from torch.nn.parallel import DistributedDataParallel
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+from models.builder import EncoderDecoder as segmodel
 from utils.dataloader.dataloader import ValPre, get_train_loader, get_val_loader
 from utils.dataloader.RGBXDataset import RGBXDataset
 from utils.engine.engine import Engine
@@ -54,7 +55,8 @@ logger = get_logger()
 
 with Engine(custom_parser=parser) as engine:
     args = parser.parse_args()
-    exec("from " + args.config + " import config")
+    config = getattr(import_module(args.config), "C")
+    config.pad = False  # Do not pad when inference
     if "x_modal" not in config:
         config["x_modal"] = "d"
     cudnn.benchmark = True
