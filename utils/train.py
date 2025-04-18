@@ -9,11 +9,11 @@ from importlib import import_module
 import numpy as np
 import torch
 import torch.nn as nn
-from models.builder import EncoderDecoder as segmodel
 from tensorboardX import SummaryWriter
 from torch.nn.parallel import DistributedDataParallel
 from val_mm import evaluate, evaluate_msf
 
+from models.builder import EncoderDecoder as segmodel
 from utils.dataloader.dataloader import get_train_loader, get_val_loader
 from utils.dataloader.RGBXDataset import RGBXDataset
 from utils.engine.engine import Engine
@@ -114,7 +114,7 @@ with Engine(custom_parser=parser) as engine:
     logger = get_logger(config.log_dir, config.log_file, rank=engine.local_rank)
     # check if pad_SUNRGBD is used correctly
     if args.pad_SUNRGBD and config.dataset_name != "SUNRGBD":
-        args.pad_SUNRGBD=False
+        args.pad_SUNRGBD = False
         logger.warning("pad_SUNRGBD is only used for SUNRGBD dataset")
     if (args.pad_SUNRGBD) and (not config.backbone.startswith("DFormerv2")):
         raise ValueError("DFormerv1 is not recommended with pad_SUNRGBD")
@@ -264,7 +264,6 @@ with Engine(custom_parser=parser) as engine:
         "class_names": config.class_names,
         "train_source": config.train_source,
         "eval_source": config.eval_source,
-        "class_names": config.class_names,
     }
     # val_pre = ValPre()
     # val_dataset = RGBXDataset(data_setting, 'val', val_pre)
