@@ -153,6 +153,7 @@ def get_train_loader(engine, dataset, config):
         "eval_source": config.eval_source,
         "class_names": config.class_names,
         "dataset_name": config.dataset_name,
+        "backbone": config.backbone,
     }
     train_preprocess = TrainPre(config.norm_mean, config.norm_std, config.x_is_single_channel, config)
 
