@@ -11,7 +11,7 @@ This repository contains the official implementation of the following papers:
 > [Ming-Ming Cheng](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ),
 > [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN) <br/>
 > ICLR 2024. 
->[Paper Link](https://arxiv.org/abs/2309.09668) | 
+>[Paper Link](https://arxiv.org/abs/2309.09668) |
 >[Homepage](https://yinbow.github.io/Projects/DFormer/index.html) |
 >[公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ) |
 >[DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD) |
@@ -25,6 +25,7 @@ This repository contains the official implementation of the following papers:
 > [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN)<br/>
 > CVPR 2025. 
 > [Paper Link](https://arxiv.org/abs/2504.04701) |
+> [中文版](https://mftp.mmcheng.net/Papers/25CVPR_RGBDSeg-CN.pdf) |
 > [Geometry prior demo](https://huggingface.co/spaces/bbynku/DFormerv2) |
 
 
