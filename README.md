@@ -1,5 +1,8 @@
 # <p align=center>`DFormer for RGBD Semantic Segmentation`</p>
 
+我们收到3D视觉工坊的邀请，在6月19日晚上19:00开展关于DFormerv2的[论文直播](https://mp.weixin.qq.com/s/VnGB4Gvwd_SOGtEt_KR67g)，有问题欢迎来和我们一起学习讨论。
+We have received an invitation from the 3D Vision Workshop to conduct a [live paper broadcast](https://mp.weixin.qq.com/s/VnGB4Gvwd_SOGtEt_KR67g) on DFormerv2 at 19:00 on June 19th. If you have any questions, please feel free to learn and discuss with us.
+
 
 This repository contains the official implementation of the following papers:
 
