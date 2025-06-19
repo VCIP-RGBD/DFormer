@@ -1,7 +1,7 @@
 # <p align=center>`DFormer for RGBD Semantic Segmentation`</p>
 
-我们收到3D视觉工坊的邀请，在6月19日晚上19:00开展关于DFormerv2的[论文直播](https://mp.weixin.qq.com/s/VnGB4Gvwd_SOGtEt_KR67g)，有问题欢迎来和我们一起学习讨论。
-We have received an invitation from the 3D Vision Workshop to conduct a [live paper broadcast](https://mp.weixin.qq.com/s/VnGB4Gvwd_SOGtEt_KR67g) on DFormerv2 at 19:00 on June 19th. If you have any questions, please feel free to learn and discuss with us.
+非常荣幸我们收到3D视觉工坊的邀请，我们在6月19日晚上19:00开展了关于DFormerv2的论文直播，有兴趣的同学可以观看[直播回放](https://www.bilibili.com/video/BV1hGNozuEe4?t=4.2)，有问题欢迎在这个项目下提issue交流讨论。
+
 
 
 This repository contains the official implementation of the following papers:
@@ -29,6 +29,7 @@ This repository contains the official implementation of the following papers:
 > CVPR 2025. 
 > [Paper Link](https://arxiv.org/abs/2504.04701) |
 > [中文版](https://mftp.mmcheng.net/Papers/25CVPR_RGBDSeg-CN.pdf) |
+> [直播回放](https://www.bilibili.com/video/BV1hGNozuEe4?t=4.2) |
 > [Geometry prior demo](https://huggingface.co/spaces/bbynku/DFormerv2) |
 
 
