@@ -267,11 +267,12 @@ You may want to cite:
   year={2024}
 }
 
-@inproceedings{dformerv2,
-      title={DFormerv2: Geometry Self-Attention for RGBD Semantic Segmentation}, 
-      author={Bo-Wen Yin and Jiao-Long Cao and Ming-Ming Cheng and Qibin Hou},
-      booktitle={CVPR},
-      year={2025}
+@inproceedings{yin2025dformerv2,
+  title={DFormerv2: Geometry Self-Attention for RGBD Semantic Segmentation},
+  author={Yin, Bo-Wen and Cao, Jiao-Long and Cheng, Ming-Ming and Hou, Qibin},
+  booktitle={Proceedings of the Computer Vision and Pattern Recognition Conference},
+  pages={19345--19355},
+  year={2025}
 }
 ```
 
