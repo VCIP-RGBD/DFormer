@@ -18,7 +18,7 @@ This repository contains the official implementation of the following papers:
 >[Homepage](https://yinbow.github.io/Projects/DFormer/index.html) |
 >[公众号解读(集智书童)](https://mp.weixin.qq.com/s/lLFejycBr8o7JNoirRDmjQ) |
 >[DFormer-SOD](https://github.com/VCIP-RGBD/DFormer-SOD) |
->[Jittor-Version](https://github.com/VCIP-RGBD/DFormer-Jittor) |
+>[Jittor-Version(国产框架)](https://github.com/VCIP-RGBD/DFormer-Jittor) |
 
 
 > DFormerv2: Geometry Self-Attention for RGBD Semantic Segmentation<br/>
@@ -32,6 +32,7 @@ This repository contains the official implementation of the following papers:
 > [直播回放](https://www.bilibili.com/video/BV1hGNozuEe4?t=4.2) |
 > [PPT](https://pan.baidu.com/s/1HjmiVBYZSnBGcPDJgfCeoA?pwd=ti6p) |
 > [Geometry prior demo](https://huggingface.co/spaces/bbynku/DFormerv2) |
+> [Jittor-Version(国产框架)](https://github.com/VCIP-RGBD/DFormer-Jittor) |
 
 
 
