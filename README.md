@@ -37,7 +37,7 @@ This repository contains the official implementation of the following papers:
 
 
 
-:robot:[RGBD-Pretrain(You can train your own encoders)](https://github.com/VCIP-RGBD/RGBD-Pretrain)
+:robot:[RGBD-D ImageNet and Pretrain(You can train your own encoders)](https://github.com/VCIP-RGBD/RGBD-Pretrain)
 
 :anchor:[Application to new datasets(添加新数据集)](https://github.com/VCIP-RGBD/DFormer/tree/main/figs/application_new_dataset)
 
