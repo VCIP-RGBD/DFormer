@@ -42,8 +42,8 @@ This repository contains the official implementation of the following papers:
 > [Ming-Ming Cheng](https://scholar.google.com/citations?hl=zh-CN&user=huWpVyEAAAAJ),
 > [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN)<br/>
 > Neurips 2025. 
-> [Paper Link (coming soon)] |
-> [Code (coming soon)] |
+> [Paper Link](https://arxiv.org/abs/2509.15096) |
+> [Code (coming soon, before the late of October)] |
 
 
 
@@ -89,7 +89,7 @@ We invite all to contribute in making it more acessible and useful. If you have 
 
 ## 1. 🌟  NEWS 
 
-- [2025/09/19] Our OmniSegmentor has been accepted by Neurips 2025, the paper and code are coming soon.
+- [2025/09/19] Our OmniSegmentor has been accepted by Neurips 2025, the code are coming soon.
 - [2025/04/08] The code of DFormerv2 is available.
 - [2025/03/09] Our DFormerv2 has been accpeted by CVPR 2025.
 - [2025/02/19] The jittor implementation of DFormer is avaiable at [Jittor-Version](https://github.com/VCIP-RGBD/DFormer-Jittor).
