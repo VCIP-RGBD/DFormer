@@ -286,6 +286,13 @@ You may want to cite:
   pages={19345--19355},
   year={2025}
 }
+
+@article{yin2025omnisegmentor,
+  title={OmniSegmentor: A Flexible Multi-Modal Learning Framework for Semantic Segmentation},
+  author={Yin, Bo-Wen and Cao, Jiao-Long and Zhang, Xuying and Chen, Yuming and Cheng, Ming-Ming and Hou, Qibin},
+  journal={arXiv preprint arXiv:2509.15096},
+  year={2025}
+}
 ```
 
 
