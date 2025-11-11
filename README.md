@@ -43,7 +43,7 @@ This repository contains the official implementation of the following papers:
 > [Qibin Hou*](https://scholar.google.com/citations?user=fF8OFV8AAAAJ&hl=zh-CN)<br/>
 > Neurips 2025. 
 > [Paper Link](https://arxiv.org/abs/2509.15096) |
-> [Code (coming soon, before the late of October)] |
+> [Code (busy with work recently, and we will release it soon)] |
 
 
 
